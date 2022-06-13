@@ -30,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
     private ArFragment arCam;
 
     // Comment to test commit
+    // Test pull push
 
     private int clickNo = 0; //helps to render the 3d model only once when we tap the screen
 
