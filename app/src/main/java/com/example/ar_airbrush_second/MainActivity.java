@@ -29,6 +29,8 @@ public class MainActivity extends AppCompatActivity {
     // object of ArFragment Class
     private ArFragment arCam;
 
+    // Test comment to test commit
+
     private int clickNo = 0; //helps to render the 3d model only once when we tap the screen
 
     public static boolean checkSystemSupport(Activity activity) {
