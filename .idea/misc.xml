@@ -3,7 +3,15 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/oh12660/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.299" />
+        <entry key="..\:/Users/oh12660/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/drawable/bg_gradient.xml" value="0.299" />
+        <entry key="..\:/Users/oh12660/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/drawable/ic_launcher_background.xml" value="0.299" />
+        <entry key="..\:/Users/oh12660/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/drawable/splash_background.xml" value="0.299" />
+        <entry key="..\:/Users/oh12660/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/drawable/splashbackground.xml" value="0.24" />
+        <entry key="..\:/Users/oh12660/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/layout/activity_arview.xml" value="0.1890625" />
         <entry key="..\:/Users/oh12660/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/layout/activity_main.xml" value="0.1703125" />
+        <entry key="..\:/Users/oh12660/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/layout/activity_mainmenu.xml" value="0.1890625" />
+        <entry key="..\:/Users/oh12660/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/layout/activity_tempmenu.xml" value="0.23385416666666667" />
       </map>
     </option>
   </component>

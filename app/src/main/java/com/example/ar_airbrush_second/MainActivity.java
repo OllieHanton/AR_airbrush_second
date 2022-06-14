@@ -6,10 +6,12 @@ import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 //import android.view.MotionEvent;
 import android.widget.Toast;
+import android.view.View;
 
 import com.google.ar.core.Anchor;
 //import com.google.ar.core.HitResult;
@@ -25,14 +27,12 @@ import com.google.ar.sceneform.ux.TransformableNode;
 import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
+    //MainActivity should handle main menu and be able to launch ARviewActivity.
 
     // object of ArFragment Class
-    private ArFragment arCam;
+    //private ArFragment arCam;
 
-    // Comment to test commit
-    // Test pull push
-
-    private int clickNo = 0; //helps to render the 3d model only once when we tap the screen
+    //private int clickNo = 0; //helps to render the 3d model only once when we tap the screen
 
     public static boolean checkSystemSupport(Activity activity) {
 
@@ -60,12 +60,20 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_mainmenu); //new
 
-        if (checkSystemSupport(this)) {
-
-            arCam = (ArFragment) getSupportFragmentManager().findFragmentById(R.id.arCameraArea);
+        }
+        public void startARview(View v) {
+            startActivity(new Intent(MainActivity.this, ARviewActivity.class));
+        }
+        //setContentView(R.layout.activity_main);
+        /*if (checkSystemSupport(this)) {
             //ArFragment is linked up with its respective id used in the activity_main.xml
+            arCam = (ArFragment) getSupportFragmentManager().findFragmentById(R.id.arCameraArea);
+
+            //To remove white "discover controller"
+            arCam.getPlaneDiscoveryController().hide();
+            arCam.getPlaneDiscoveryController().setInstructionView(null);
 
             arCam.setOnTapArPlaneListener((hitResult, plane, motionEvent) -> {
                 clickNo++;
@@ -96,9 +104,9 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
-    }
+    }*/
 
-    private void addModel(Anchor anchor, ModelRenderable modelRenderable) {
+    /*private void addModel(Anchor anchor, ModelRenderable modelRenderable) {
 
         AnchorNode anchorNode = new AnchorNode(anchor);
         // Creating a AnchorNode with a specific anchor
@@ -111,5 +119,5 @@ public class MainActivity extends AppCompatActivity {
         //attaching the 3d model with the TransformableNode that is already attached with the node
         model.select();
 
-    }
+    }*/
 }
