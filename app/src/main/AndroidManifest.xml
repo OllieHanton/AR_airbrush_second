@@ -31,14 +31,17 @@
 
         <activity
             android:name=".MainActivity"
-            android:exported="true">
+            android:exported="true"
+            android:screenOrientation="userLandscape">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ARviewActivity" >
+        <activity
+            android:name=".ARviewActivity"
+            android:screenOrientation="userLandscape">
         </activity>
     </application>
 

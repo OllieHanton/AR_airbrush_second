@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
 
     //private int clickNo = 0; //helps to render the 3d model only once when we tap the screen
 
-    public static boolean checkSystemSupport(Activity activity) {
+    /*public static boolean checkSystemSupport(Activity activity) {
 
         // checking whether the API version of the running Android >= 24
         // that means Android Nougat 7.0
@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
             activity.finish();
             return false;
         }
-    }
+    }*/
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
