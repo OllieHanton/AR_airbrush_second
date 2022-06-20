@@ -16,6 +16,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.ar.core.Anchor;
 //import com.google.ar.core.HitResult;
 //import com.google.ar.core.Plane;
@@ -77,12 +78,9 @@ public class ARviewActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_arview);
 
-
-
             if (checkSystemSupport(this)) {
 
                 setUpAnchorPoints();
-
 
 
                 //work in progress for button
@@ -92,6 +90,42 @@ public class ARviewActivity extends AppCompatActivity{
                 ConstraintLayout Arlayout = (ConstraintLayout) arView.findViewById(R.id.ar_camera_area);
                 Button testbutton = new Button(this);
                 Arlayout.addView(testbutton);*/
+
+
+                FloatingActionButton fab = findViewById(R.id.down_button);
+                fab.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                    }
+                });
+
+    /*private View myView;
+    FloatingActionButton myFab = (FloatingActionButton) myView.findViewById(R.id.down_button);
+    myFab.setOnClickListener(new View.OnClickListener() {
+        public void onClick(View v) {
+            doMyThing();
+        }
+    });
+    FloatingActionButton deleteButton = findViewById(R.id.blank_button_bottom_right);
+        deleteButton.setOnClickListener(new View.OnClickListener() {
+        @Override*/
+
+        /*public void onClick(View view) {
+            //Delete the Anchor if it exists
+            Log.d(TAG,"Deleteing anchor");
+            int currentAnchorIndex;
+            if (numberOfAnchors < 1 ) {
+                Toast.makeText(LineViewMainActivity.this, "All nodes deleted", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            removeAnchorNode(currentSelectedAnchorNode);
+            currentSelectedAnchorNode = null;
+
+            //Remove the line if it exists also
+            removeLine(nodeForLine);
+        }
+    });*/
 
 
                 if(modeChosen==0) {
