@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory app:title="Bluetooth">
+    </PreferenceCategory>
+    <PreferenceScreen
+        app:key="bt"
+        app:summary="Select from discoverable devices"
+        app:title="Connect to a bluetooth device" >
+    <intent
+        android:action="android.intent.action.VIEW"
+        android:targetPackage="com.example"
+        android:targetClass="com.example.ar_airbrush_second.bluetooth.SelectDeviceFragment" />
+    </PreferenceScreen>
+    <PreferenceCategory app:title="Features">
+        <SwitchPreference
+            app:defaultValue="false"
+            app:key="uv"
+            app:summary="Select to enable automatic UV light during spraying"
+            app:title="UV Light" />
+
+        <SwitchPreference
+            app:defaultValue="false"
+            app:key="laser"
+            app:summary="Select to enable a red laser indicating spray region"
+            app:title="Laser Guidance" />
+    </PreferenceCategory>
+
+</PreferenceScreen>
