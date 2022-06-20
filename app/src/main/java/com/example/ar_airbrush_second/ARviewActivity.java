@@ -1,6 +1,7 @@
 package com.example.ar_airbrush_second;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import android.app.Activity;
 import android.app.ActivityManager;
@@ -10,6 +11,7 @@ import android.os.Build;
 import android.os.Bundle;
 //import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -76,10 +78,10 @@ public class ARviewActivity extends AppCompatActivity{
         setContentView(R.layout.activity_arview);
 
 
+
             if (checkSystemSupport(this)) {
 
-                setUpAnchorPoints();
-                arSceneView=arCam.getArSceneView();
+
                 if(modeChosen==0) {
                     designMode();
                 }
@@ -127,9 +129,7 @@ public class ARviewActivity extends AppCompatActivity{
                             return null;
                         });
             }
-            //TextView textView = new TextView(this);
-            //textView.setText("BeepBoop");
-            //arSceneView.addView(textView);
+
         });
     }
 
