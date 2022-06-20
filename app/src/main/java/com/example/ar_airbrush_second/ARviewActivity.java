@@ -81,6 +81,18 @@ public class ARviewActivity extends AppCompatActivity{
 
             if (checkSystemSupport(this)) {
 
+                setUpAnchorPoints();
+
+
+
+                //work in progress for button
+                /*arSceneView=arCam.getArSceneView();
+                ArFragment arfragmentofscene = (ArFragment) getSupportFragmentManager().findFragmentById(R.id.ar_camera_area);
+                View arView = arfragmentofscene.getArSceneView();
+                ConstraintLayout Arlayout = (ConstraintLayout) arView.findViewById(R.id.ar_camera_area);
+                Button testbutton = new Button(this);
+                Arlayout.addView(testbutton);*/
+
 
                 if(modeChosen==0) {
                     designMode();
@@ -89,12 +101,7 @@ public class ARviewActivity extends AppCompatActivity{
                     makingMode();
                 }
 
-            } else {
-
-                return;
-
             }
-
     }
 
     //initialise AR environment before entering design mode
@@ -129,7 +136,9 @@ public class ARviewActivity extends AppCompatActivity{
                             return null;
                         });
             }
-
+            //TextView textView = new TextView(this);
+            //textView.setText("BeepBoop");
+            //arSceneView.addView(textView);
         });
     }
 
