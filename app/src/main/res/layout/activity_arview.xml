@@ -1,40 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ARviewActivity">
 
+    <!--button to toggle design/maker mode-->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/blank_button_bottom_right"
+        android:id="@+id/toggle_mode_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:layout_margin="5dp"
+        android:layout_gravity="end|bottom"
+        android:layout_margin="8dp"
+        android:contentDescription="@string/submit"
+        android:src="@drawable/design_icon"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/createmode_forward"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|bottom"
+        android:layout_margin="8dp"
+        android:contentDescription="@string/submit"
+        android:src="@drawable/arrow_right_icon"
         android:visibility="invisible"
-        android:src="@drawable/ic_launcher_foreground"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/down_button"
+        android:id="@+id/createmode_back"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_toLeftOf="@+id/blank_button_bottom_right"
-        android:layout_margin="5dp"
-        android:src="@drawable/ic_launcher_round"
+        android:layout_gravity="end|bottom"
+        android:layout_margin="8dp"
+        android:contentDescription="@string/submit"
+        android:gravity="top"
+        android:src="@drawable/arrow_left_icon"
+        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintStart_toStartOf="parent" />
 
-    <!--This is the fragment that will be used as AR camera-->
+    <!--<EditText
+        android:id="@+id/editTextTextPersonName"
+        android:layout_width="57dp"
+        android:layout_height="51dp"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:text="Name"
+        tools:layout_editor_absoluteX="9dp"
+        tools:layout_editor_absoluteY="284dp" />-->
+
     <fragment
         android:id="@+id/ar_camera_area"
         android:name="com.google.ar.sceneform.ux.ArFragment"
@@ -42,7 +60,87 @@
         android:layout_height="match_parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <SeekBar
+        android:id="@+id/createmode_seekbar"
+        style="@style/Widget.AppCompat.SeekBar.Discrete"
+        android:layout_width="500dp"
+        android:layout_height="25dp"
+        android:layout_margin="8dp"
+        android:max="4"
+        android:progress="0"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/createmode_forward"
+        app:layout_constraintStart_toEndOf="@+id/createmode_back" />
+
+    <TextView
+        android:id="@+id/createmode_text_distance_to_substrate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|bottom"
+        android:layout_margin="16dp"
+        android:gravity="top"
+        android:text="Dist"
+        android:textSize="20sp"
+        android:textColor="#FFFFFF"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/settings_drop_down_menu" />
+
+    <TextView
+        android:id="@+id/designmode_text_cost_evaluator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:gravity="top"
+        android:text="Cost"
+        android:textSize="20sp"
+        android:textColor="#FFFFFF"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/createmode_top_text_instructions"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|bottom"
+        android:layout_margin="12dp"
+        android:text="You are in Design Mode! Slowly move camera to initiate augmented reality. When white dots appear, tap to place and edit your design."
+        android:gravity="center_horizontal"
+        android:breakStrategy="simple"
+        android:textSize="12sp"
+        android:textColor="#FFFFFF"
+        app:layout_constraintEnd_toStartOf="@+id/settings_drop_down_menu"
+        app:layout_constraintStart_toEndOf="@+id/toggle_mode_button"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageButton
+        android:id="@+id/settings_drop_down_menu"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_margin="8dp"
+        app:srcCompat="@drawable/new_settings_48"
+        android:background="@null"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"  />
+
+
+    <!--<com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/settings_drop_down_menu"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|bottom"
+        android:layout_margin="8dp"
+        android:contentDescription="@string/submit"
+        android:gravity="top"
+        android:src="@drawable/settings_icon"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />-->
 
 </androidx.constraintlayout.widget.ConstraintLayout>

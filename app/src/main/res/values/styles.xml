@@ -9,6 +9,6 @@
             <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
             <item name="colorPrimary">#3F51B5</item>
             <item name="colorPrimaryDark">#303F9F</item>
-            <item name="colorAccent">#FF4081</item>
+            <item name="colorAccent">#5CE2FA</item>
         </style>
 </resources>
