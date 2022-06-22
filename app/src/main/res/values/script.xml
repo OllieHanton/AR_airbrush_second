@@ -1,7 +1,95 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="design_mode_welcome">You are in <b>Design Mode</b>! Slowly move camera to initiate augmented reality. When white dots appear, tap to place and edit your design. When you are happy with your design tap the Create mode button in the top left to start fabricating</string>
 
+    <string name="create_mode_welcome">You are now in <b>Create Mode</b>! You will be guided step-by-step through each of four fabrication phases relating to the four different materials that need to be sprayed. You can move between steps using the arrow buttons. The progress bar below allows you to skip between the four phases.</string>
 
+    <!--Script-->
+    <string name="script_1">Please make sure that your phone is mounted on the ergonomic airbrush handle and that you have checked within settings that all appropriate modules are implemented within the app.</string>
+    <string name="script_2">You are able to return to the design mode by using the button in the top left. If you do this once you have finished spraying the first layer however, it may cause your device to fail</string>
 
+    <!--Spraying layer 1, copper-->
+    <string name="script_3">Phase 1: Spraying Conductive Base Electrode (copper).</string>
+    <string name="script_4">Put on your PPE (respirator and gloves) and turn on ventilation system.</string>
+    <string name="tip_script_4">Tip: Solvents such as toluene in this paint can cause serious health damage.</string>
+    <string name="script_5">Start by loading the copper backplane paint into the airbrush cup. Use a paint strainer and pipette to avoid overspill
+         and get a smooth consistency to avoid blocks.</string>
+    <string name="tip_script_5">Tip: Once the paint is in the airbrush move rapidly as it dries quickly.</string>
+    <string name="script_6">Place the cap on the airbrush and remove the nozzle guard.</string>
+    <string name="script_7">Turn the compressor up to 45 psi or 4 bar. This paint is viscous and requires power to be effectively atomised.</string>
+    <string name="script_8">Move the airbrush to approximately 30cm perpendicular to the substrate. The distance gauge on the right will help you and provide a warning box if you spray while too far away.</string>
+                <!--warning box/distance gauge/angle implemented while spray button pressed down-->
+    <string name="script_9">Release air by pressing down on the trigger. While air is flowing release paint by pulling trigger back.</string>
+    <string name="tip_script_9">Tip: Pulling back before pressing down will cause paint to splutter.</string>
+    <string name="script_10">Fill in the outline and wiring of your backpane device. All of the area you spray will light-up beyond connection points.</string>
+    <string name="tip_script_10">Tip: You can use a french curve or stencil to get sharp edges to your design.</string>
+    <string name="script_11">When you have finished spraying, return the unused paint to the bottle.</string>
+    <string name="script_12">Now wait at least 15 minutes for paint to dry. Use this time to clean out your airbrush.</string>
+    <string name="tip_script_12">Tip: remove the ergonomic casing to make cleaning easier and disassemble airbrush to access parts.</string>
+                <!--onscreen timer, disappaears when finished-->
+    <string name="script_13">You are now ready to move onto phase 2 - spraying the dielectric.</string>
+
+    <!--Spraying layer 2, dielectric-->
+    <string name="script_14">Phase 2: Spraying Dielectric Layer.</string>
+    <string name="script_15">Ensure that PPE is still in place.</string>
+    <string name="script_16">Load the delectric material into the airbrush cup. Use a paint strainer and pipette to avoid overspill
+         and get a smooth consistency to avoid blocks.</string>
+    <string name="script_17">Spray with compressor at 45 psi or 4 bar.</string>
+    <string name="script_18">As before, use the distance gauge to position your airbrush approximately 30cm perpendicular to the substrate.</string>
+    <string name="script_19">Fill in the outline. This layer should cover beyond the edges of the copper layer. Be careful not to spray over the ends of the wires though, these need to be exposed copper for the circuit connections.</string>
+                <!--highlight separate connection point in AR with stop sign/red circle.-->
+    <string name="script_20">When you have finished spraying, return the unused paint to the bottle.</string>
+    <string name="script_21">Now wait at least 15 minutes for paint to dry. Use this time to clean out your airbrush.</string>
+    <string name="tip_script_21">Tip: remove the ergonomic casing to make cleaning easier and disassemble airbrush to access parts.</string>
+                <!--onscreen timer, disappaears when finished-->
+    <string name="script_22">You are now ready to move onto phase 3 - spraying the electroluminescent material.</string>
+
+    <!--Spraying layer 3, active material-->
+    <string name="script_23">Phase 3: Spraying Emissive Layer.</string>
+    <string name="script_24">Ensure that PPE is still in place.</string>
+    <string name="script_25">Load the electrolumienscent material into the airbrush cup. Use a paint strainer and pipette to avoid overspill
+         and get a smooth consistency to avoid blocks.</string>
+    <string name="script_26">UV light is automatically turned on to better show where electroluminescent material is deposited. Turn off from settings if required.</string>
+                <!--UVlight on-->
+    <string name="script_27">Spray with compressor at 45 psi or 4 bar.</string>
+    <string name="script_28">As before, use the distance gauge to position your airbrush approximately 30cm perpendicular to the substrate.</string>
+    <string name="script_29">Fill in the same space as the previous layer.</string>
+    <string name="tip_script_29">Be careful not to cover attachment points</string>
+    <string name="script_30">When you have finished spraying, return the unused paint to the bottle.</string>
+                <!--UVlight off-->
+    <string name="script_31">Now wait at least 15 minutes for paint to dry. Use this time to clean out your airbrush.</string>
+    <string name="tip_script_31">Tip: remove the ergonomic casing to make cleaning easier and disassemble airbrush to access parts.</string>
+                <!--onscreen timer-->
+    <string name="script_32">You are now ready to move onto phase 4 - spraying the transparent electrode.</string>
+
+    <!--Spraying layer 4, PEDOT:PSS-->
+    <string name="script_33">Phase 4: Spraying Transparent Conductive Layer.</string>
+    <string name="script_34">Ensure that PPE is still in place.</string>
+    <string name="script_35">Load the transparent conductive material into the airbrush cup. Use a paint strainer and pipette to avoid overspill
+         and get a smooth consistency to avoid blocks.</string>
+    <string name="script_36">This ink is thinner than the previous ones so spray with your compressor at 25 psi or 2 bar.</string>
+    <string name="script_37">Gently layer this ink within the boundaries of the previous two layers. Take great care to ensure that it does not cross the base electrode point(s).</string>
+                <!--highlight separate connection point in AR with stop sign/red circle.-->
+    <string name="script_38">This ink is transluscent. Use a dry paper towel to make sure it is flowing before spraying. Your coverage should not for beads but should also be just visible as a thin dark blue film.</string>
+    <string name="script_39">Spray the ink between the main body and the separate connection point highlighted.</string>
+                <!--highlight separate connection point in AR with green circle.-->
+    <string name="script_40">Now wait at least 15 minutes for paint to dry. Use this time to clean out your airbrush.</string>
+    <string name="tip_script_40">Tip: remove the ergonomic casing to make cleaning easier and disassemble airbrush to access parts.</string>
+    <!--onscreen timer-->
+    <string name="script_41">You are now ready to move onto the testing framework for your circuit and adding of the driving circuit.</string>
+
+    <!--Electrode attachment-->
+    <string name="script_42">Phase 5: Testing and Electrode Attachment.</string>
+    <string name="script_43">The last step is to test connections and attach the control circuit to your sprayed display.</string>
+    <string name="script_44">Start by testing the resistance between the base attachment point and top attachment point with a multimeter.</string>
+                <!--highlight both connection points in AR with red and green circles.-->
+    <string name="script_45">There must be no resistance otherwise you have a short circuit and the cell will not light up.</string>
+    <string name="script_46">Attach your electrodes to the connection points with crocodile clips or copper tape. Make sure that the metals are in contact to ensure a strong electrical connection.</string>
+    <string name="tip_script_46">Use a dab of copper paint if necessary to reinforce the connection and let this dry.</string>
+    <string name="script_47">Test your circuit by applying power. We will now take you through our testing framework:</string>
+    <string name="script_48">If your cell does not light up you may well have a break in the transparent top electrode. Use the slider at the bottom of the screen to return to phase 4 and redo this step. If it continues not to work you may need to restart the whole process. </string>
+    <string name="script_49">If your cell partially lights with a hard edge on where it lights up then you likely have insufficiently sprayed electrodes. If the lit up part is in contact with the base electrode then you may have to restart. If the lit up part is in contact with the top electrode then use the slider below to return to phase 4 and redo this step. </string>
+    <string name="script_50">If your cell lights up faintly then you likely have too thin (or too thick) a layer of electroluminescent material.</string>
+    <string name="script_51">If your cell lights up fully then well done!!</string>
 
 </resources>
