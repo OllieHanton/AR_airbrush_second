@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">AR_airbrush_second</string>
     <string name="bluetooth_settings">Device Bluetooth Settings</string>
+    <string name="submit">Submit</string>
 </resources>
