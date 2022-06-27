@@ -3,6 +3,28 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Coding/Android/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.197" />
+        <entry key="..\:/Coding/Android/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/drawable/ic_launcher_background.xml" value="0.197" />
+        <entry key="..\:/Coding/Android/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/drawable/ic_notification.xml" value="0.1425" />
+        <entry key="..\:/Coding/Android/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/layout/activity_arview.xml" value="0.1484375" />
+        <entry key="..\:/Coding/Android/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/layout/activity_bluetooth.xml" value="0.1515625" />
+        <entry key="..\:/Coding/Android/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/layout/activity_btcomms.xml" value="0.1125" />
+        <entry key="..\:/Coding/Android/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/layout/activity_mainmenu.xml" value="0.176" />
+        <entry key="..\:/Coding/Android/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/layout/activity_preferences.xml" value="0.176" />
+        <entry key="..\:/Coding/Android/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/layout/activity_prefmenu.xml" value="0.264" />
+        <entry key="..\:/Coding/Android/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/layout/activity_select_device.xml" value="0.1125" />
+        <entry key="..\:/Coding/Android/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/layout/device_info_layout.xml" value="0.264" />
+        <entry key="..\:/Coding/Android/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/layout/device_list.xml" value="0.2" />
+        <entry key="..\:/Coding/Android/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/layout/device_list_header.xml" value="0.1890625" />
+        <entry key="..\:/Coding/Android/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/layout/device_list_item.xml" value="0.1890625" />
+        <entry key="..\:/Coding/Android/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/layout/fragment_connection.xml" value="0.121875" />
+        <entry key="..\:/Coding/Android/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/layout/fragment_devices.xml" value="0.16041666666666668" />
+        <entry key="..\:/Coding/Android/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/layout/fragment_select_device.xml" value="0.25226449275362317" />
+        <entry key="..\:/Coding/Android/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/layout/fragment_terminal.xml" value="0.176" />
+        <entry key="..\:/Coding/Android/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/layout/select_device.xml" value="0.2015625" />
+        <entry key="..\:/Coding/Android/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/menu/menu_devices.xml" value="0.1890625" />
+        <entry key="..\:/Coding/Android/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/xml/preferences.xml" value="0.264" />
+        <entry key="..\:/Coding/Android/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/xml/root_preferences.xml" value="0.25226449275362317" />
         <entry key="..\:/Users/oh12660/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.299" />
         <entry key="..\:/Users/oh12660/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/drawable/bg_gradient.xml" value="0.299" />
         <entry key="..\:/Users/oh12660/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/drawable/ic_launcher_background.xml" value="0.299" />

@@ -1,24 +1,28 @@
 package com.example.ar_airbrush_second;
 
-import android.app.Activity;
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.IBinder;
+import android.util.Log;
 import android.widget.Toast;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
+
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
-import androidx.preference.PreferenceManager;
 import androidx.preference.SwitchPreference;
 
-import com.example.ar_airbrush_second.bluetooth.SelectDeviceFragment;
+import com.example.ar_airbrush_second.bluetooth.BluetoothActivity;
+import com.example.ar_airbrush_second.bluetooth.SerialService;
+import com.example.ar_airbrush_second.bluetooth.TerminalFragment;
+import com.example.ar_airbrush_second.bluetooth.TextUtil;
 
+public class PrefFragment extends PreferenceFragmentCompat implements ServiceConnection {
 
-public class PrefFragment extends PreferenceFragmentCompat {
-
-    private static SharedPreferences sharedPref;
-    public static SharedPreferences.Editor mEditor;
+    private SharedPreferences sharedPref;
+    public SharedPreferences.Editor mEditor;
     boolean uv;
     boolean laser;
 
@@ -36,36 +40,32 @@ public class PrefFragment extends PreferenceFragmentCompat {
         selectDevice.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference selectDevice) {
-                getFragmentManager().beginTransaction().replace(R.id.prefFrame, new SelectDeviceFragment()).commit();
+                startActivity(new Intent(getActivity(), BluetoothActivity.class));
                 return true;
             }
         });
 
-        // Features (UV and laser)
+        //region Features (UV and laser)
         SwitchPreference uvSwitch = findPreference("uv");
         assert uvSwitch != null;
-        uvSwitch.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-            @Override
-            public boolean onPreferenceChange(Preference preference, Object newValue) {
-                boolean switched = ((SwitchPreference) preference)
-                        .isChecked();
-                uv = !switched;
-                mEditor = sharedPref.edit();
-                mEditor.putBoolean("uv", uv).commit();
+        uvSwitch.setOnPreferenceChangeListener((preference, newValue) -> {
+            boolean switched = ((SwitchPreference) preference)
+                    .isChecked();
+            uv = !switched;
+            mEditor = sharedPref.edit();
+            mEditor.putBoolean("uv", uv).commit();
 //                uvSwitch.setSummary(!uv ? "Disabled" : "Enabled");
+            // Toast
+            if (uv) {
+                 send("<UV ON>");
                 // Toast
-                if (uv) {
-                    // TODO Add UV on arduino command
-                    // Toast
-                    Toast.makeText(getActivity(), "UV Light Enabled", Toast.LENGTH_SHORT).show();
-                }
-                else {
-                    // TODO Add UV off arduino command
-                    // Toast
-                    Toast.makeText(getActivity(), "UV Light Disabled", Toast.LENGTH_SHORT).show();
-                }
-                return true;
+                Toast.makeText(getActivity(), "UV Light Enabled", Toast.LENGTH_SHORT).show();
+            } else {
+                send("<UV OFF>");
+                // Toast
+                Toast.makeText(getActivity(), "UV Light Disabled", Toast.LENGTH_SHORT).show();
             }
+            return true;
         });
 
         SwitchPreference laserSwitch = findPreference("laser");
@@ -80,17 +80,51 @@ public class PrefFragment extends PreferenceFragmentCompat {
                 mEditor.putBoolean("laser", laser).commit();
 
                 if (laser) {
-                    // TODO Add laser on arduino command
+                    send("<LASER ON>");
                     // Toast
                     Toast.makeText(getActivity(), "Laser Enabled", Toast.LENGTH_SHORT).show();
-                }
-                else {
-                    // TODO Add laser off arduino command
+                } else {
+                    send("<LASER OFF>");
                     // Toast
                     Toast.makeText(getActivity(), "Laser Disabled", Toast.LENGTH_SHORT).show();
                 }
                 return true;
             }
-        });
+        }); //endregion
+    }
+
+    private SerialService service;
+    public TerminalFragment.Connected connected;
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Intent intent = new Intent(getActivity(), SerialService.class);
+        getActivity().bindService(intent, this, Context.BIND_AUTO_CREATE);
+    }
+
+    @Override
+    public void onServiceConnected(ComponentName name, IBinder binder) {
+        service = ((SerialService.SerialBinder) binder).getService();
+        connected = TerminalFragment.Connected.True;
+    }
+
+    @Override
+    public void onServiceDisconnected(ComponentName name) {
+        service = null;
+    }
+
+    public void send(String str) {
+        if (connected != TerminalFragment.Connected.True) {
+            Toast.makeText(getActivity(), "not connected", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        try {
+            byte[] data;
+            data = (str).getBytes();
+            service.write(data);
+        } catch (Exception e) {
+            Log.d("ERROR","Connection lost?");
+        }
     }
 }
