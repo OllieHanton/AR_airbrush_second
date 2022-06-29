@@ -26,6 +26,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.example.ar_airbrush_second.ARviewActivity;
 import com.example.ar_airbrush_second.R;
 
 public class TerminalFragment extends Fragment implements ServiceConnection, SerialListener {
@@ -38,7 +39,6 @@ public class TerminalFragment extends Fragment implements ServiceConnection, Ser
     public Connected connected = Connected.False;
     public boolean initialStart = true;
     private boolean pendingNewline = false;
-    private String newline = "\r\n";
 
     // Lifecycle
     @Override
@@ -48,14 +48,6 @@ public class TerminalFragment extends Fragment implements ServiceConnection, Ser
         setRetainInstance(true);
         deviceAddress = getArguments().getString("device");
     }
-
-    /*@Override
-    public void onDestroy() {
-        if (connected != Connected.False)
-            disconnect();
-        getActivity().stopService(new Intent(getActivity(), SerialService.class));
-        super.onDestroy();
-    }*/
 
     @Override
     public void onStart() {
@@ -69,27 +61,11 @@ public class TerminalFragment extends Fragment implements ServiceConnection, Ser
         }
     }
 
-    /*@Override
-    public void onStop() {
-        if (service != null && !getActivity().isChangingConfigurations())
-            service.detach();
-        super.onStop();
-    }*/
-
     @Override
     public void onAttach(@NonNull Activity activity) {
         super.onAttach(activity);
         getActivity().bindService(new Intent(getActivity(), SerialService.class), this, Context.BIND_AUTO_CREATE);
     }
-
-   /* @Override
-    public void onDetach() {
-        try {
-            getActivity().unbindService(this);
-        } catch (Exception ignored) {
-        }
-        super.onDetach();
-    }*/
 
     @Override
     public void onResume() {
@@ -145,15 +121,9 @@ public class TerminalFragment extends Fragment implements ServiceConnection, Ser
     }
 
     private void receive(byte[] data) {
-        String msg = new String(data);
-        if (msg.length() > 0) {
-            if (pendingNewline && msg.charAt(0) == '\n') {
-                Editable edt = receiveText.getEditableText();
-                if (edt != null && edt.length() > 1)
-                    edt.replace(edt.length() - 2, edt.length(), "");
-            }
-            pendingNewline = msg.charAt(msg.length() - 1) == '\r';
-        }
+        int triggerState = ARviewActivity.byteArrayToInt(data);
+        String msg = String.valueOf(triggerState);
+        String newline = "\r\n";
         receiveText.append(TextUtil.toCaretString(msg, newline.length() != 0));
     }
 

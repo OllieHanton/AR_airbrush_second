@@ -23,8 +23,8 @@ public class PrefFragment extends PreferenceFragmentCompat implements ServiceCon
 
     private SharedPreferences sharedPref;
     public SharedPreferences.Editor mEditor;
-    boolean uv;
-    boolean laser;
+    public boolean uv;
+    public boolean laser;
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
@@ -47,7 +47,6 @@ public class PrefFragment extends PreferenceFragmentCompat implements ServiceCon
 
         //region Features (UV and laser)
         SwitchPreference uvSwitch = findPreference("uv");
-        assert uvSwitch != null;
         uvSwitch.setOnPreferenceChangeListener((preference, newValue) -> {
             boolean switched = ((SwitchPreference) preference)
                     .isChecked();
@@ -57,11 +56,11 @@ public class PrefFragment extends PreferenceFragmentCompat implements ServiceCon
 //                uvSwitch.setSummary(!uv ? "Disabled" : "Enabled");
             // Toast
             if (uv) {
-                 send("<UV ON>");
+//                 send("<UV ON>");
                 // Toast
                 Toast.makeText(getActivity(), "UV Light Enabled", Toast.LENGTH_SHORT).show();
             } else {
-                send("<UV OFF>");
+//                send("<UV OFF>");
                 // Toast
                 Toast.makeText(getActivity(), "UV Light Disabled", Toast.LENGTH_SHORT).show();
             }
@@ -69,7 +68,6 @@ public class PrefFragment extends PreferenceFragmentCompat implements ServiceCon
         });
 
         SwitchPreference laserSwitch = findPreference("laser");
-        assert laserSwitch != null;
         laserSwitch.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
@@ -96,6 +94,20 @@ public class PrefFragment extends PreferenceFragmentCompat implements ServiceCon
     private SerialService service;
     public TerminalFragment.Connected connected;
 
+    public void send(String str) {
+        if (connected != TerminalFragment.Connected.True) {
+            Toast.makeText(getActivity(), "not connected", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        try {
+            byte[] data;
+            data = (str).getBytes();
+            service.write(data);
+        } catch (Exception e) {
+            Log.d("ERROR", "Connection lost?");
+        }
+    }
+
     @Override
     public void onResume() {
         super.onResume();
@@ -112,19 +124,5 @@ public class PrefFragment extends PreferenceFragmentCompat implements ServiceCon
     @Override
     public void onServiceDisconnected(ComponentName name) {
         service = null;
-    }
-
-    public void send(String str) {
-        if (connected != TerminalFragment.Connected.True) {
-            Toast.makeText(getActivity(), "not connected", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        try {
-            byte[] data;
-            data = (str).getBytes();
-            service.write(data);
-        } catch (Exception e) {
-            Log.d("ERROR","Connection lost?");
-        }
     }
 }

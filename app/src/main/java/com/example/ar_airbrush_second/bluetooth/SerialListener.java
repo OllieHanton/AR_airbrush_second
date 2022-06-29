@@ -1,6 +1,6 @@
 package com.example.ar_airbrush_second.bluetooth;
 
-interface SerialListener {
+public interface SerialListener {
     void onSerialConnect      ();
     void onSerialConnectError (Exception e);
     void onSerialRead         (byte[] data);

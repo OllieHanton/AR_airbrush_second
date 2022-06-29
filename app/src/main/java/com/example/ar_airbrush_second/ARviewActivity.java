@@ -7,11 +7,18 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.AlertDialog;
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 //import android.view.MotionEvent;
+import android.os.IBinder;
+import android.text.Editable;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -20,6 +27,10 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.ar_airbrush_second.bluetooth.SerialListener;
+import com.example.ar_airbrush_second.bluetooth.SerialService;
+import com.example.ar_airbrush_second.bluetooth.TerminalFragment;
+import com.example.ar_airbrush_second.bluetooth.TextUtil;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.ar.core.Anchor;
 //import com.google.ar.core.HitResult;
@@ -35,7 +46,7 @@ import com.google.ar.sceneform.ux.TransformableNode;
 //import java.lang.ref.WeakReference;
 import java.util.Objects;
 
-public class ARviewActivity extends AppCompatActivity{
+public class ARviewActivity extends AppCompatActivity implements ServiceConnection, SerialListener {
 
     // object of ArFragment Class
     private ArFragment arCam;
@@ -47,11 +58,11 @@ public class ARviewActivity extends AppCompatActivity{
     private int designChosen = 1;
 
     //Design mode (0) or create mode (1) toggled flag
-    private int toggleMode=0;
+    private int toggleMode = 0;
 
     //Novice level (with text) or expert level (no text) - scale chosen for create mode... toggled flag.
     //Novice =0, intermediate =1, expert =2
-    private int novicelevel=0;
+    private int novicelevel = 0;
 
     //layout token for AR layout for dynamic layout implementation - taken from AR fragment
     private ArSceneView arSceneView;
@@ -60,9 +71,14 @@ public class ARviewActivity extends AppCompatActivity{
     private int sliderChangedValue;
 
     //number to count through script messages from file... between 51
-    private int scriptCounter=0;
+    private int scriptCounter = 0;
 
     Toast toastMessage;
+
+    // Hardware related
+    private SharedPreferences sharedPref;
+    public boolean uv;
+    public boolean laser;
 
     public static boolean checkSystemSupport(Activity activity) {
         // checking whether the API version of the running Android >= 24
@@ -90,6 +106,10 @@ public class ARviewActivity extends AppCompatActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_arview);
+
+        sharedPref = this.getSharedPreferences("pref", Context.MODE_PRIVATE);
+        uv = sharedPref.getBoolean("uv", false);
+        laser = sharedPref.getBoolean("uv", false);
 
         if (checkSystemSupport(this)) {
 
@@ -120,9 +140,11 @@ public class ARviewActivity extends AppCompatActivity{
                     updateScriptCounters();
                     implementScript();
                 }
+
                 @Override
                 public void onStartTrackingTouch(SeekBar seekBar) {
                 }
+
                 @Override
                 public void onStopTrackingTouch(SeekBar seekBar) {
                 }
@@ -141,7 +163,7 @@ public class ARviewActivity extends AppCompatActivity{
                         slider.setProgress(progressIncrementor);
                     }*/
                     //remove the progress incrementor above and put the functionality into implementScript...
-                    if(scriptCounter>0) {
+                    if (scriptCounter > 0) {
                         scriptCounter--;
                     }
                     implementScript();
@@ -158,7 +180,7 @@ public class ARviewActivity extends AppCompatActivity{
                         slider.setProgress(progressIncrementor);
                     }*/
                     //remove the progress incrementor above and put the functionality into implementScript...
-                    if(scriptCounter<51) {
+                    if (scriptCounter < 51) {
                         scriptCounter++;
                     }
                     implementScript();
@@ -169,25 +191,24 @@ public class ARviewActivity extends AppCompatActivity{
             togglebutton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if(toggleMode==0) {
+                    if (toggleMode == 0) {
                         //set create mode
                         costevaluator.setVisibility(View.INVISIBLE);
                         substratedistance.setVisibility(View.VISIBLE);
                         slider.setVisibility(View.VISIBLE);
                         backbutton.setVisibility(View.VISIBLE);
                         forwardsbutton.setVisibility(View.VISIBLE);
-                        toggleMode=1;
+                        toggleMode = 1;
                         togglebutton.setImageResource(R.drawable.airbrush_64);
                         topTextInstructions.setText(getString(R.string.create_mode_welcome));
-                    }
-                    else {
+                    } else {
                         //set design mode
                         costevaluator.setVisibility(View.VISIBLE);
                         substratedistance.setVisibility(View.INVISIBLE);
                         slider.setVisibility(View.INVISIBLE);
                         backbutton.setVisibility(View.INVISIBLE);
                         forwardsbutton.setVisibility(View.INVISIBLE);
-                        toggleMode=0;
+                        toggleMode = 0;
                         togglebutton.setImageResource(R.drawable.design_icon);
                         topTextInstructions.setText(getString(R.string.design_mode_welcome));
                     }
@@ -198,20 +219,20 @@ public class ARviewActivity extends AppCompatActivity{
             settingsdropdown.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (toastMessage!= null) {
+                    if (toastMessage != null) {
                         toastMessage.cancel();
                     }
-                    toastMessage=Toast.makeText(ARviewActivity.this, "Settings open", Toast.LENGTH_SHORT);
+                    toastMessage = Toast.makeText(ARviewActivity.this, "Settings open", Toast.LENGTH_SHORT);
                     toastMessage.show();
                 }
             });
 
             //if(toggleMode==0) {
-                designMode();
+            designMode();
             //}
             //else {
             //    designMode();
-                //createMode();
+            //createMode();
             //}
         }
     }
@@ -220,81 +241,80 @@ public class ARviewActivity extends AppCompatActivity{
     private void implementScript() {
         TextView topTextInstructions = findViewById(R.id.createmode_top_text_instructions);
         SeekBar slider = findViewById(R.id.createmode_seekbar);
-        int progressIncrementor=slider.getProgress();
-        if(novicelevel==0){
-            if(scriptCounter==0){
+        int progressIncrementor = slider.getProgress();
+        if (novicelevel == 0) {
+            if (scriptCounter == 0) {
                 topTextInstructions.setText(getString(R.string.create_mode_welcome));
-            }
-            else {
-                int resourceId = this.getResources().getIdentifier("script_"+scriptCounter, "string", this.getPackageName());
+            } else {
+                int resourceId = this.getResources().getIdentifier("script_" + scriptCounter, "string", this.getPackageName());
                 topTextInstructions.setText(getString(resourceId));
 
                 //if tip_script_x != null then implement as a toast
             }
         }
 
-        if (toastMessage!= null) {
+        if (toastMessage != null) {
             toastMessage.cancel();
         }
 
         //set progressIncrementor based on where the script is
-        if(scriptCounter==0){
-            progressIncrementor=0;// and update...
-            toastMessage=Toast.makeText(ARviewActivity.this, "Phase " + sliderChangedValue + ": intro", Toast.LENGTH_SHORT);
+        if (scriptCounter == 0) {
+            progressIncrementor = 0;// and update...
+            toastMessage = Toast.makeText(ARviewActivity.this, "Phase " + sliderChangedValue + ": intro", Toast.LENGTH_SHORT);
             toastMessage.show();
         }
-        if(scriptCounter==3){
-            progressIncrementor=1;// and update...
-            toastMessage=Toast.makeText(ARviewActivity.this, "Phase " + sliderChangedValue + ": Spraying Base electrode", Toast.LENGTH_SHORT);
+        if (scriptCounter == 3) {
+            progressIncrementor = 1;// and update...
+            toastMessage = Toast.makeText(ARviewActivity.this, "Phase " + sliderChangedValue + ": Spraying Base electrode", Toast.LENGTH_SHORT);
             toastMessage.show();
         }
-        if(scriptCounter==14){
-            progressIncrementor=2;// and update...
-            toastMessage=Toast.makeText(ARviewActivity.this, "Phase " + sliderChangedValue + ": Spraying dielectric", Toast.LENGTH_SHORT);
+        if (scriptCounter == 14) {
+            progressIncrementor = 2;// and update...
+            toastMessage = Toast.makeText(ARviewActivity.this, "Phase " + sliderChangedValue + ": Spraying dielectric", Toast.LENGTH_SHORT);
             toastMessage.show();
         }
-        if(scriptCounter==23){
-            progressIncrementor=3;// and update...
-            toastMessage=Toast.makeText(ARviewActivity.this, "Phase " + sliderChangedValue + ": Spraying electroluminescent coat", Toast.LENGTH_SHORT);
+        if (scriptCounter == 23) {
+            progressIncrementor = 3;// and update...
+            toastMessage = Toast.makeText(ARviewActivity.this, "Phase " + sliderChangedValue + ": Spraying electroluminescent coat", Toast.LENGTH_SHORT);
             toastMessage.show();
         }
-        if(scriptCounter==33){
-            progressIncrementor=4;// and update...
-            toastMessage=Toast.makeText(ARviewActivity.this, "Phase " + sliderChangedValue + ": Spraying transparent conductive electrode", Toast.LENGTH_SHORT);
+        if (scriptCounter == 33) {
+            progressIncrementor = 4;// and update...
+            toastMessage = Toast.makeText(ARviewActivity.this, "Phase " + sliderChangedValue + ": Spraying transparent conductive electrode", Toast.LENGTH_SHORT);
             toastMessage.show();
         }
-        if(scriptCounter==43){
-            progressIncrementor=5;// and update...
-            toastMessage=Toast.makeText(ARviewActivity.this, "Phase " + sliderChangedValue + ": Electrode attachment", Toast.LENGTH_SHORT);
+        if (scriptCounter == 43) {
+            progressIncrementor = 5;// and update...
+            toastMessage = Toast.makeText(ARviewActivity.this, "Phase " + sliderChangedValue + ": Electrode attachment", Toast.LENGTH_SHORT);
             toastMessage.show();
         }
-        if(progressIncrementor<=slider.getMax()) {
+        if (progressIncrementor <= slider.getMax()) {
             slider.setProgress(progressIncrementor);
         }
-
+        btCommand();
     }
 
     //method to set script number when progress bar is changed (N.B. the other way around is handled within "implementScript()"), use should always be followed by implementscript()
     private void updateScriptCounters() {
         SeekBar slider = findViewById(R.id.createmode_seekbar);
-        int progressIncrementor=slider.getProgress();
-        if(progressIncrementor==0) {
-            scriptCounter=1;
+        int progressIncrementor = slider.getProgress();
+        if (progressIncrementor == 0) {
+            scriptCounter = 1;
         }
-        if(progressIncrementor==1) {
-            scriptCounter=3;
+        if (progressIncrementor == 1) {
+            scriptCounter = 3;
         }
-        if(progressIncrementor==2) {
-            scriptCounter=14;
+        if (progressIncrementor == 2) {
+            scriptCounter = 14;
         }
-        if(progressIncrementor==3) {
-            scriptCounter=23;
+        if (progressIncrementor == 3) {
+            scriptCounter = 23;
         }
-        if(progressIncrementor==4) {
-            scriptCounter=33;
+        if (progressIncrementor == 4) {
+            scriptCounter = 33;
         }
-        if(progressIncrementor==5) {
-            scriptCounter=43;
+        if (progressIncrementor == 5) {
+            scriptCounter = 43;
         }
     }
 
@@ -311,7 +331,7 @@ public class ARviewActivity extends AppCompatActivity{
 
     //default setup - mode where object can be editted
     private void designMode() {
-        designChosen=0;
+        designChosen = 0;
         arCam.setOnTapArPlaneListener((hitResult, plane, motionEvent) -> {
             clickNo++;
             //Add 3d model: the 3d model comes to the scene only when clickNo is one that means once
@@ -338,7 +358,7 @@ public class ARviewActivity extends AppCompatActivity{
 
     //alternative mode where object is fixed/editting no longer enabled and script/progress bar/forwardsback buttons are implemented
     private void createMode() {
-        novicelevel=1;
+        novicelevel = 1;
     }
 
     private void toggleExperience() {
@@ -363,4 +383,84 @@ public class ARviewActivity extends AppCompatActivity{
         model.select();
 
     }
+
+    private void btCommand() {
+        // UV On/Off
+        if (uv) {
+            if (scriptCounter == 27) {
+                send("<UV ON>");
+                Toast.makeText(this, "UV Light On!", Toast.LENGTH_SHORT).show();
+            }
+            if (scriptCounter == 30) {
+                send("<UV OFF>");
+                Toast.makeText(this, "UV Light Off!", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    private SerialService service;
+    public TerminalFragment.Connected connected;
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Intent intent = new Intent(this, SerialService.class);
+        this.bindService(intent, this, Context.BIND_AUTO_CREATE);
+    }
+
+    @Override
+    public void onServiceConnected(ComponentName name, IBinder binder) {
+        service = ((SerialService.SerialBinder) binder).getService();
+        connected = TerminalFragment.Connected.True;
+    }
+
+    @Override
+    public void onServiceDisconnected(ComponentName name) {
+        service = null;
+    }
+
+    public void send(String str) {
+        if (connected != TerminalFragment.Connected.True) {
+            Toast.makeText(this, "not connected", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        try {
+            byte[] data;
+            data = (str).getBytes();
+            service.write(data);
+        } catch (Exception e) {
+            Log.d("ERROR", "Connection lost?");
+        }
+    }
+
+    private void receive(byte[] data) {
+        int triggerState = byteArrayToInt(data);
+    }
+
+    public static int byteArrayToInt(byte[] b) {
+        return b[3] & 0xFF |
+                (b[2] & 0xFF) << 8 |
+                (b[1] & 0xFF) << 16 |
+                (b[0] & 0xFF) << 24;
+    }
+
+    // SerialListener
+    @Override
+    public void onSerialConnect() {
+        connected = TerminalFragment.Connected.True;
+    }
+
+    @Override
+    public void onSerialConnectError(Exception e) {
+    }
+
+    @Override
+    public void onSerialRead(byte[] data) {
+        receive(data);
+    }
+
+    @Override
+    public void onSerialIoError(Exception e) {
+    }
+
 }

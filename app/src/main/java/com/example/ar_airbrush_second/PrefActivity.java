@@ -33,7 +33,7 @@ public class PrefActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        assert getSupportActionBar() != null;   //null check
+//        assert getSupportActionBar() != null;   //null check
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);   //show back button
         // change title bar text
         getSupportActionBar().setTitle("Preferences");
