@@ -45,11 +45,11 @@
         app:layout_constraintVertical_bias="0.005" />
 
     <Button
-        android:id="@+id/pref"
+        android:id="@+id/bt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:onClick="openPref"
-        android:text="Preferences"
+        android:onClick="openBT"
+        android:text="Bluetooth Setup"
         app:layout_constraintBottom_toTopOf="@+id/arView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"

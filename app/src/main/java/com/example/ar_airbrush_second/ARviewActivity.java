@@ -1,8 +1,6 @@
 package com.example.ar_airbrush_second;
 
-import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
 
 import android.app.Activity;
 import android.app.ActivityManager;
@@ -12,25 +10,22 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 //import android.view.MotionEvent;
 import android.os.IBinder;
-import android.text.Editable;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
+import android.widget.PopupMenu;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.ar_airbrush_second.bluetooth.SerialListener;
 import com.example.ar_airbrush_second.bluetooth.SerialService;
 import com.example.ar_airbrush_second.bluetooth.TerminalFragment;
-import com.example.ar_airbrush_second.bluetooth.TextUtil;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.ar.core.Anchor;
 //import com.google.ar.core.HitResult;
@@ -44,9 +39,10 @@ import com.google.ar.sceneform.ux.ArFragment;
 import com.google.ar.sceneform.ux.TransformableNode;
 
 //import java.lang.ref.WeakReference;
+import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
-public class ARviewActivity extends AppCompatActivity implements ServiceConnection, SerialListener {
+public class ARviewActivity extends AppCompatActivity implements ServiceConnection, PopupMenu.OnMenuItemClickListener {
 
     // object of ArFragment Class
     private ArFragment arCam;
@@ -72,11 +68,12 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
 
     //number to count through script messages from file... between 51
     private int scriptCounter = 0;
+    private int scriptCounterLast = 0;
 
     Toast toastMessage;
 
-    // Hardware related
-    private SharedPreferences sharedPref;
+    // Settings values
+    public int level;
     public boolean uv;
     public boolean laser;
 
@@ -107,9 +104,6 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_arview);
 
-        sharedPref = this.getSharedPreferences("pref", Context.MODE_PRIVATE);
-        uv = sharedPref.getBoolean("uv", false);
-        laser = sharedPref.getBoolean("uv", false);
 
         if (checkSystemSupport(this)) {
 
@@ -152,7 +146,7 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
 
             //handle "distance from substrate" text:
 
-
+            tactileButtons();
             //handle createmode back button
             backbutton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -164,7 +158,9 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
                     }*/
                     //remove the progress incrementor above and put the functionality into implementScript...
                     if (scriptCounter > 0) {
+                        scriptCounterLast = scriptCounter;
                         scriptCounter--;
+
                     }
                     implementScript();
                 }
@@ -181,6 +177,7 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
                     }*/
                     //remove the progress incrementor above and put the functionality into implementScript...
                     if (scriptCounter < 51) {
+                        scriptCounterLast = scriptCounter;
                         scriptCounter++;
                     }
                     implementScript();
@@ -219,11 +216,7 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
             settingsdropdown.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (toastMessage != null) {
-                        toastMessage.cancel();
-                    }
-                    toastMessage = Toast.makeText(ARviewActivity.this, "Settings open", Toast.LENGTH_SHORT);
-                    toastMessage.show();
+                    showSettings(v);
                 }
             });
 
@@ -235,6 +228,117 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
             //createMode();
             //}
         }
+    }
+
+    public void showSettings(View v) {
+        level = getIntSetting("level");
+        uv = getBoolSetting("uv");
+        laser = getBoolSetting("laser");
+        Log.d("DEBUG", "Settings Retrieved");
+
+        PopupMenu popup = new PopupMenu(this, v);
+        popup.setOnMenuItemClickListener(this);
+        popup.inflate(R.menu.menu_settings);
+        Menu menu = popup.getMenu();
+        switch (level) {
+            case 1:
+                menu.findItem(R.id.settings_beginner).setChecked(true);
+                break;
+            case 2:
+                menu.findItem(R.id.settings_intermediate).setChecked(true);
+                break;
+            case 3:
+                menu.findItem(R.id.settings_advanced).setChecked(true);
+                break;
+        }
+        menu.findItem(R.id.settings_uv).setChecked(uv);
+        menu.findItem(R.id.settings_laser).setChecked(laser);
+        popup.show();
+    }
+
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.settings_beginner: {
+                level = 1;
+                saveIntSetting("level", level);
+                Log.d("SETTING LEVEL", String.valueOf(level));
+                break;
+            }
+            case R.id.settings_intermediate: {
+                level = 2;
+                saveIntSetting("level", level);
+                Log.d("SETTING LEVEL", String.valueOf(level));
+                break;
+            }
+            case R.id.settings_advanced: {
+                level = 3;
+                saveIntSetting("level", level);
+                Log.d("SETTING LEVEL", String.valueOf(level));
+                break;
+            }
+            case R.id.settings_uv: {
+                // Select to enable automatic UV light during spraying
+                uv = !item.isChecked();
+                item.setChecked(uv);
+                saveBoolSetting("uv", uv);
+                if (toastMessage != null) {
+                    toastMessage.cancel();
+                }
+                if (uv) {
+                    toastMessage = Toast.makeText(this, "UV Light Enabled", Toast.LENGTH_SHORT);
+                } else {
+                    toastMessage = Toast.makeText(this, "UV Light Disabled", Toast.LENGTH_SHORT);
+                }
+                toastMessage.show();
+                item.setShowAsAction(MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
+                item.setActionView(new View(getApplicationContext()));
+                item.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
+                    @Override
+                    public boolean onMenuItemActionExpand(MenuItem item) {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onMenuItemActionCollapse(MenuItem item) {
+                        return false;
+                    }
+                });
+                break;
+            }
+            case R.id.settings_laser: {
+                // Select to enable a red laser indicating spray region
+                laser = !item.isChecked();
+                item.setChecked(laser);
+                saveBoolSetting("laser", laser);
+                if (toastMessage != null) {
+                    toastMessage.cancel();
+                }
+                if (laser) {
+                    send("<LASER ON>");
+                    toastMessage = Toast.makeText(this, "Laser Enabled", Toast.LENGTH_SHORT);
+                } else {
+                    send("<LASER OFF>");
+                    toastMessage = Toast.makeText(this, "Laser Disabled", Toast.LENGTH_SHORT);
+                }
+                toastMessage.show();
+                item.setShowAsAction(MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
+                item.setActionView(new View(getApplicationContext()));
+                item.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
+                    @Override
+                    public boolean onMenuItemActionExpand(MenuItem item) {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onMenuItemActionCollapse(MenuItem item) {
+                        return false;
+                    }
+                });
+                break;
+            }
+        }
+        return false;
     }
 
     //method to handle the updating of the top text instructions by using the independently updated scriptCounter value and the strings from values/script.xml. Also updates progress through script
@@ -291,7 +395,7 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
         if (progressIncrementor <= slider.getMax()) {
             slider.setProgress(progressIncrementor);
         }
-        btCommand();
+        uvControl();
     }
 
     //method to set script number when progress bar is changed (N.B. the other way around is handled within "implementScript()"), use should always be followed by implementscript()
@@ -316,6 +420,7 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
         if (progressIncrementor == 5) {
             scriptCounter = 43;
         }
+        scriptCounterLast = scriptCounter - 1;
     }
 
     //initialise AR environment before entering design mode
@@ -384,20 +489,85 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
 
     }
 
-    private void btCommand() {
+    //region Settings methods
+    private boolean getBoolSetting(String key) {
+        SharedPreferences preferences = getApplicationContext().getSharedPreferences("settings", android.content.Context.MODE_PRIVATE);
+        return preferences.getBoolean(key, false);
+    }
+
+    private void saveBoolSetting(String key, boolean value) {
+        SharedPreferences preferences = getApplicationContext().getSharedPreferences("settings", android.content.Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putBoolean(key, value);
+        editor.commit();
+    }
+
+    private int getIntSetting(String key) {
+        SharedPreferences preferences = getApplicationContext().getSharedPreferences("settings", android.content.Context.MODE_PRIVATE);
+        return preferences.getInt(key, 1);
+    }
+
+    private void saveIntSetting(String key, int value) {
+        SharedPreferences preferences = getApplicationContext().getSharedPreferences("settings", android.content.Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putInt(key, value);
+        editor.commit();
+    }
+
+    //endregion
+
+    //region BT Commands
+    private int forceState;
+    public String btMessage;
+
+    private void uvControl() {
         // UV On/Off
         if (uv) {
-            if (scriptCounter == 27) {
-                send("<UV ON>");
-                Toast.makeText(this, "UV Light On!", Toast.LENGTH_SHORT).show();
+            if (toastMessage != null) {
+                toastMessage.cancel();
             }
-            if (scriptCounter == 30) {
+            if ((scriptCounter == 27 && scriptCounterLast == 26) || (scriptCounter == 29 && scriptCounterLast == 30)) {
+                send("<UV ON>");
+                toastMessage = Toast.makeText(this, "UV Light On!", Toast.LENGTH_SHORT);
+                toastMessage.show();
+            }
+            if ((scriptCounter == 30 && scriptCounterLast == 29) || (scriptCounter == 26 && scriptCounterLast == 27)) {
                 send("<UV OFF>");
-                Toast.makeText(this, "UV Light Off!", Toast.LENGTH_SHORT).show();
+                toastMessage = Toast.makeText(this, "UV Light Off!", Toast.LENGTH_SHORT);
+                toastMessage.show();
+            }
+            if (scriptCounter == 0 || scriptCounter == 51) {
+                send("<UV OFF>");
             }
         }
     }
 
+    private void laserControl() {
+        // TODO send laser on msg
+    }
+
+    public void tactileButtons() {
+//        Log.d("BUTTON", btMessage);
+        if (Objects.equals(btMessage, "fwd")) {
+            Log.d("BUTTON", btMessage);
+            if (scriptCounter < 51) {
+                scriptCounterLast = scriptCounter;
+                scriptCounter++;
+            }
+            implementScript();
+        }
+        if (Objects.equals(btMessage, "bck")) {
+            Log.d("BUTTON", btMessage);
+            if (scriptCounter > 0) {
+                scriptCounterLast = scriptCounter;
+                scriptCounter--;
+            }
+            implementScript();
+        }
+    }
+    //endregion
+
+    //region BT Service
     private SerialService service;
     public TerminalFragment.Connected connected;
 
@@ -433,34 +603,9 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
         }
     }
 
-    private void receive(byte[] data) {
-        int triggerState = byteArrayToInt(data);
+    public void receive(byte[] data) {
+        btMessage = new String(data, StandardCharsets.UTF_8);
+        Log.d("MESSAGE RECEIVED", btMessage);
     }
-
-    public static int byteArrayToInt(byte[] b) {
-        return b[3] & 0xFF |
-                (b[2] & 0xFF) << 8 |
-                (b[1] & 0xFF) << 16 |
-                (b[0] & 0xFF) << 24;
-    }
-
-    // SerialListener
-    @Override
-    public void onSerialConnect() {
-        connected = TerminalFragment.Connected.True;
-    }
-
-    @Override
-    public void onSerialConnectError(Exception e) {
-    }
-
-    @Override
-    public void onSerialRead(byte[] data) {
-        receive(data);
-    }
-
-    @Override
-    public void onSerialIoError(Exception e) {
-    }
-
+    //endregion
 }

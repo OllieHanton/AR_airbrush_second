@@ -26,7 +26,6 @@ Indicates that this app requires Google Play Services for AR.
     <uses-feature
         android:name="android.hardware.camera.ar"
         android:required="true" />
-
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -56,20 +55,16 @@ Indicates that this app requires Google Play Services for AR.
             </intent-filter>
         </activity>
         <activity
-            android:name=".PrefActivity"
-            android:label="Preferences"
-            android:parentActivityName=".MainActivity"
+            android:name=".bluetooth.BluetoothActivity"
             android:screenOrientation="userLandscape">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />
         </activity>
         <activity
-            android:name=".bluetooth.BluetoothActivity"
-            android:screenOrientation="userLandscape" />
-        <activity
             android:name=".ARviewActivity"
             android:screenOrientation="userLandscape" />
+
         <service android:name=".bluetooth.SerialService" />
     </application>
 

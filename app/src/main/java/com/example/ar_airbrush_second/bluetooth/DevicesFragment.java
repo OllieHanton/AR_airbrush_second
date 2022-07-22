@@ -31,12 +31,25 @@ public class DevicesFragment extends ListFragment {
     private final ArrayList<BluetoothDevice> listItems = new ArrayList<>();
     private ArrayAdapter<BluetoothDevice> listAdapter;
 
+    /*// Edits
+    private SharedPreferences sharedPref;
+    public SharedPreferences.Editor mEditor;
+    public String bluetoothKey;
+    //*/
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
         if (getActivity().getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH))
             bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+
+        /*// Edits
+        ArrayList deviceStrs = new ArrayList();
+        final ArrayList devices = new ArrayList();
+        showDeviceSelecterDialog(deviceStrs, devices);
+        //*/
+
         listAdapter = new ArrayAdapter<BluetoothDevice>(getActivity(), 0, listItems) {
             @NonNull
             @Override
@@ -111,6 +124,7 @@ public class DevicesFragment extends ListFragment {
         BluetoothDevice device = listItems.get(position);
         Bundle args = new Bundle();
         args.putString("device", device.getAddress());
+
         Fragment fragment = new TerminalFragment();
         fragment.setArguments(args);
         getFragmentManager().beginTransaction().replace(R.id.connectFrame, fragment, "terminal").addToBackStack(null).commit();

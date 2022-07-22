@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/settings_level"
+        android:title="@string/user_proficiency_level">
+        <menu>
+            <group
+                android:id="@+id/settings_proficiency"
+                android:checkableBehavior="single">
+                <item
+                    android:id="@+id/settings_beginner"
+                    android:title="@string/beginner" />
+                <item
+                    android:id="@+id/settings_intermediate"
+                    android:title="@string/intermediate" />
+                <item
+                    android:id="@+id/settings_advanced"
+                    android:title="@string/advanced" />
+            </group>
+        </menu>
+    </item>
+
+    <item
+        android:id="@+id/settings_modules"
+        android:title="@string/modules">
+        <menu>
+            <item
+                android:id="@+id/settings_uv"
+                android:checkable="true"
+                android:title="@string/uv_light" />
+            <item
+                android:id="@+id/settings_laser"
+                android:checkable="true"
+                android:title="@string/laser_guidance" />
+        </menu>
+    </item>
+</menu>
+

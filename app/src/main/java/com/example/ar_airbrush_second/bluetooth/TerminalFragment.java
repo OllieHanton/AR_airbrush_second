@@ -8,9 +8,10 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
-import android.text.Editable;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.method.ScrollingMovementMethod;
@@ -20,14 +21,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.example.ar_airbrush_second.ARviewActivity;
 import com.example.ar_airbrush_second.R;
+
+import java.nio.charset.StandardCharsets;
 
 public class TerminalFragment extends Fragment implements ServiceConnection, SerialListener {
 
@@ -38,7 +39,6 @@ public class TerminalFragment extends Fragment implements ServiceConnection, Ser
     private TextView receiveText;
     public Connected connected = Connected.False;
     public boolean initialStart = true;
-    private boolean pendingNewline = false;
 
     // Lifecycle
     @Override
@@ -120,17 +120,28 @@ public class TerminalFragment extends Fragment implements ServiceConnection, Ser
         service.disconnect();
     }
 
-    private void receive(byte[] data) {
-        int triggerState = ARviewActivity.byteArrayToInt(data);
-        String msg = String.valueOf(triggerState);
-        String newline = "\r\n";
-        receiveText.append(TextUtil.toCaretString(msg, newline.length() != 0));
-    }
-
     private void status(String str) {
         SpannableStringBuilder spn = new SpannableStringBuilder(str + '\n');
         spn.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.colorStatusText)), 0, spn.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         receiveText.append(spn);
+    }
+
+    public String btMessage;
+
+    public Handler handler;
+
+    public void receive(byte[] data) {
+        btMessage = new String(data, StandardCharsets.UTF_8);
+        Log.d("MESSAGE RECEIVED", btMessage);
+        // TODO Use handler to pass btMessage
+//        handler.obtainMessage(btMessage).sendToTarget();
+    }
+
+    public static int byteArrayToInt(byte[] b) {
+        return b[3] & 0xFF |
+                (b[2] & 0xFF) << 8 |
+                (b[1] & 0xFF) << 16 |
+                (b[0] & 0xFF) << 24;
     }
 
     // SerialListener

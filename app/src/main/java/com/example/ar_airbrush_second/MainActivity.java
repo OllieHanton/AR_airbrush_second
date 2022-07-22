@@ -15,6 +15,7 @@ import android.widget.Button;
 import android.widget.Toast;
 import android.view.View;
 
+import com.example.ar_airbrush_second.bluetooth.BluetoothActivity;
 import com.google.ar.core.Anchor;
 //import com.google.ar.core.HitResult;
 //import com.google.ar.core.Plane;
@@ -34,9 +35,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mainmenu);
+        getSupportActionBar().hide();
     }
-    public void openPref(View v) {
-        startActivity(new Intent(MainActivity.this, PrefActivity.class));
+    public void openBT(View v) {
+        startActivity(new Intent(MainActivity.this, BluetoothActivity.class));
     }
 
     public void startARview(View v) {
