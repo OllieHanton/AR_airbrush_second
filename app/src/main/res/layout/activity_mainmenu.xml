@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/gradient"
     tools:context=".MainActivity">
 
     <TextView
@@ -11,27 +12,14 @@
         style="@style/LargeText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="DISPRAY AR ASSISTANT"
+        android:text="Dispray Augmented Airbrush"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.05" />
 
-    <Button
-        android:id="@+id/template"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="44dp"
-        android:text="Select Template Design"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/custom"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/menuTitle"
-        app:layout_constraintVertical_bias="0.005" />
-
-    <Button
+    <!--<Button
         android:id="@+id/custom"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -42,32 +30,54 @@
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/template"
         app:layout_constraintTop_toBottomOf="@+id/menuTitle"
-        app:layout_constraintVertical_bias="0.005" />
+        app:layout_constraintVertical_bias="0.005" />-->
+
+    <Button
+        android:id="@+id/template"
+        android:layout_width="300dp"
+        android:layout_height="80dp"
+        android:backgroundTint="@color/teal"
+        android:onClick="designMenu"
+        android:text="Select Template Design"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_margin="8dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/menuTitle" />
 
     <Button
         android:id="@+id/bt"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="300dp"
+        android:layout_height="80dp"
+        android:backgroundTint="@color/teal"
         android:onClick="openBT"
         android:text="Bluetooth Setup"
-        app:layout_constraintBottom_toTopOf="@+id/arView"
+        android:layout_margin="8dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/template" />
+        app:layout_constraintTop_toBottomOf="@+id/template"/>
 
     <Button
         android:id="@+id/arView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="300dp"
+        android:layout_height="80dp"
+        android:backgroundTint="@color/teal"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
         android:onClick="startARview"
-        android:text="AR view"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:text="Start making"
+        android:layout_margin="8dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/template" />
+        app:layout_constraintTop_toBottomOf="@+id/bt" />
+
+    <ImageButton
+        android:id="@+id/settings_drop_down_menu"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_margin="8dp"
+        app:srcCompat="@drawable/new_settings_48"
+        android:background="@null"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"  />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

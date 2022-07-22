@@ -28,12 +28,15 @@
         <entry key="..\:/Coding/Android/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/xml/root_preferences.xml" value="0.25226449275362317" />
         <entry key="..\:/Users/oh12660/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.299" />
         <entry key="..\:/Users/oh12660/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/drawable/bg_gradient.xml" value="0.299" />
+        <entry key="..\:/Users/oh12660/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/drawable/gradient.xml" value="0.3715" />
+        <entry key="..\:/Users/oh12660/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/drawable/gradientgrey.xml" value="0.3715" />
         <entry key="..\:/Users/oh12660/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/drawable/ic_launcher_background.xml" value="0.299" />
         <entry key="..\:/Users/oh12660/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/drawable/splash_background.xml" value="0.299" />
         <entry key="..\:/Users/oh12660/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/drawable/splashbackground.xml" value="0.24" />
-        <entry key="..\:/Users/oh12660/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/layout/activity_arview.xml" value="0.33" />
+        <entry key="..\:/Users/oh12660/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/layout/activity_arview.xml" value="0.22401847575057737" />
+        <entry key="..\:/Users/oh12660/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/layout/activity_designchoice.xml" value="0.37083333333333335" />
         <entry key="..\:/Users/oh12660/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/layout/activity_main.xml" value="0.1703125" />
-        <entry key="..\:/Users/oh12660/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/layout/activity_mainmenu.xml" value="0.1890625" />
+        <entry key="..\:/Users/oh12660/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/layout/activity_mainmenu.xml" value="0.5" />
         <entry key="..\:/Users/oh12660/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/layout/activity_tempmenu.xml" value="0.23385416666666667" />
       </map>
     </option>

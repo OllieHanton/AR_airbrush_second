@@ -6,8 +6,8 @@
 
         <style name="AppTheme" parent="Theme.MaterialComponents.DayNight">
             <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
-            <item name="colorPrimary">#3F51B5</item>
-            <item name="colorPrimaryDark">#303F9F</item>
+            <item name="colorPrimary">@color/turquoise</item>
+            <item name="colorPrimaryDark">@color/teal</item>
             <item name="colorAccent">#5CE2FA</item>
         </style>
 </resources>

@@ -2,17 +2,7 @@ package com.example.ar_airbrush_second;
 
 import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
-import android.app.Activity;
-import android.app.ActivityManager;
-import android.app.AlertDialog;
-import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.os.Build;
 import android.os.Bundle;
-//import android.view.MotionEvent;
-import android.widget.Button;
-import android.widget.Toast;
 import android.view.View;
 
 import com.example.ar_airbrush_second.bluetooth.BluetoothActivity;
@@ -43,6 +33,10 @@ public class MainActivity extends AppCompatActivity {
 
     public void startARview(View v) {
         startActivity(new Intent(MainActivity.this, ARviewActivity.class));
+    }
+
+    public void designMenu(View v) {
+        startActivity(new Intent(MainActivity.this, DesignChoiceActivity.class));
     }
 
 }

@@ -15,4 +15,14 @@
     <color name="colorReceiveText">#00FF00</color>
     <color name="colorSendText">#82CAFF</color>
     <color name="colorStatusText">#FFDB58</color>
+
+    <!-- palette -->
+    <color name="teal">#FF018C8A</color>
+    <color name="skyblue">#FF03DAC5</color>
+    <color name="turquoise">#FF03DAC5</color>
+    <color name="burntorange">#FF8C3300</color>
+    <color name="orange">#FFD95002</color>
+
+
+
 </resources>

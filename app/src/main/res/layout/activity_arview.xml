@@ -60,7 +60,7 @@
         android:layout_height="match_parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0" />
@@ -83,25 +83,25 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end|bottom"
-        android:layout_margin="16dp"
+        android:layout_margin="12dp"
         android:gravity="top"
         android:text="Dist"
-        android:textSize="20sp"
         android:textColor="#FFFFFF"
+        android:textSize="20sp"
         android:visibility="invisible"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/settings_drop_down_menu" />
+        app:layout_constraintStart_toStartOf="@+id/ar_camera_area"
+        app:layout_constraintTop_toBottomOf="@+id/toggle_mode_button" />
 
     <TextView
         android:id="@+id/designmode_text_cost_evaluator"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp"
+        android:layout_margin="12dp"
         android:gravity="top"
         android:text="Cost"
         android:textSize="20sp"
         android:textColor="#FFFFFF"
-        android:visibility="invisible"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -114,11 +114,28 @@
         android:text="@string/design_mode_welcome"
         android:gravity="center_horizontal"
         android:breakStrategy="simple"
-        android:textSize="12dp"
+        android:textSize="14dp"
         android:textColor="#FFFFFF"
+        android:background="@drawable/gradienttextbackground"
         app:layout_constraintEnd_toStartOf="@+id/settings_drop_down_menu"
         app:layout_constraintStart_toEndOf="@+id/toggle_mode_button"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/createmode_tips"
+        android:layout_width="80dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|bottom"
+        android:layout_margin="8dp"
+        android:background="@drawable/gradienttextbackground"
+        android:breakStrategy="simple"
+        android:gravity="center_horizontal"
+        android:text="Tip: remove tips by changing proficiency level in settings."
+        android:textColor="#FFFFFF"
+        android:textSize="14dp"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/createmode_top_text_instructions" />
 
     <ImageButton
         android:id="@+id/settings_drop_down_menu"
@@ -129,6 +146,31 @@
         android:background="@null"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"  />
+
+    <Button
+        android:id="@+id/addwiresbutton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:text="Add wiring"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/ar_camera_area"
+        app:layout_constraintStart_toStartOf="@+id/ar_camera_area" />
+
+    <!--<TextView
+        android:id="@+id/tips_onscreen"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|bottom"
+        android:layout_margin="8dp"
+        android:gravity="top"
+        android:text="Tips are shown here - to turn off visit settings."
+        android:textColor="#FFFFFF"
+        android:textSize="20sp"
+        android:visibility="visible"
+        app:layout_constraintBottom_toTopOf="@+id/createmode_seekbar"
+        app:layout_constraintEnd_toStartOf="@+id/createmode_forward"
+        app:layout_constraintStart_toEndOf="@+id/createmode_back" />-->
 
 
     <!--<com.google.android.material.floatingactionbutton.FloatingActionButton
