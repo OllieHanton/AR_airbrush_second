@@ -26,6 +26,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -41,14 +42,18 @@ import com.google.ar.core.Anchor;
 //import com.google.ar.core.HitResult;
 //import com.google.ar.core.Plane;
 import com.google.ar.core.Frame;
+import com.google.ar.core.Session;
 import com.google.ar.sceneform.AnchorNode;
 import com.google.ar.sceneform.ArSceneView;
 import com.google.ar.sceneform.FrameTime;
+import com.google.ar.sceneform.Node;
 import com.google.ar.sceneform.Scene;
+import com.google.ar.sceneform.math.Quaternion;
 import com.google.ar.sceneform.math.Vector3;
 import com.google.ar.sceneform.rendering.Light;
 import com.google.ar.sceneform.rendering.ModelRenderable;
 //import com.google.ar.sceneform.rendering.Renderable;
+import com.google.ar.sceneform.rendering.ShapeFactory;
 import com.google.ar.sceneform.ux.ArFragment;
 //import com.google.ar.sceneform.ux.BaseArFragment;
 import com.google.ar.sceneform.ux.TransformableNode;
@@ -61,6 +66,8 @@ import com.google.ar.core.Pose;
 
 //import java.lang.ref.WeakReference;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.lang.Math;
 import java.util.concurrent.CompletableFuture;
@@ -91,6 +98,7 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
 
     //slider value - equivalent to spraying phase between 0 and 5
     private int sliderChangedValue;
+    public boolean visualiseLayersOn=false;
 
     //number to count through script messages from file... between 51
     private int scriptCounter = 0;
@@ -98,13 +106,16 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
 
     private TextView substrateDistance;
     private TextView costEvaluator;
-    private AnchorNode anchorNode;
+    private AnchorNode anchorNode = null;
     private Anchor mainanchor = null;
+    private List<AnchorNode> anchorNodeList = new ArrayList<>();
+    private Node nodeForLine;
+    public boolean objectFlag = false;
 
     Toast toastMessage;
 
-    // Settings values
-    public int level;
+    // Settings values - (User level: 1=novice, 3=expert)
+    public int level=1;
     public boolean uv;
     public boolean laser;
 
@@ -135,7 +146,11 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
             FloatingActionButton forwardsButton = findViewById(R.id.createmode_forward);
             TextView topTextInstructions = findViewById(R.id.createmode_top_text_instructions);
             TextView sidetiptextbox = findViewById(R.id.createmode_tips);
-            Button wiresbutton = findViewById(R.id.addwiresbutton);
+            Button wiresButton = findViewById(R.id.addwiresbutton);
+            Button deleteButton = findViewById(R.id.deleteobjectbutton);
+            Button layerViewButton = findViewById(R.id.layerpreviewbutton);
+            ImageView changingImageView = findViewById(R.id.changingImageView);
+
             //handle slider functionality - script here?
             slider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                 @Override
@@ -190,6 +205,15 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
                         scriptCounter++;
                     }
                     implementScript();
+                    /*if (anchorNode != null) {
+                        //Get the current Pose and transform it then set a new anchor at the new pose
+                        Session session = arCam.getArSceneView().getSession();
+                        Anchor currentAnchor = anchorNode.getAnchor();
+                        Pose oldPose = currentAnchor.getPose();
+                        Pose newPose = oldPose.compose(Pose.makeTranslation(-0.05f,0,0));
+                        anchorNode = moveRenderable(anchorNode, newPose);
+                    }*/
+
                 }
             });
 
@@ -208,7 +232,12 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
                         toggleButton.setImageResource(R.drawable.airbrush_64);
                         topTextInstructions.setText(getString(R.string.create_mode_welcome));
                         sidetiptextbox.setVisibility(View.VISIBLE);
-                        wiresbutton.setVisibility(View.INVISIBLE);
+                        changingImageView.setVisibility(View.INVISIBLE);
+                        wiresButton.setVisibility(View.INVISIBLE);
+                        deleteButton.setVisibility(View.INVISIBLE);
+                        layerViewButton.setVisibility(View.INVISIBLE);
+                        //suspend editable functionality of object here
+                        //...
 
                         //Temporarily add colour changed object here...
 
@@ -224,7 +253,12 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
                         toggleButton.setImageResource(R.drawable.design_icon);
                         topTextInstructions.setText(getString(R.string.design_mode_welcome));
                         sidetiptextbox.setVisibility(View.INVISIBLE);
-                        wiresbutton.setVisibility(View.VISIBLE);
+                        changingImageView.setVisibility(View.INVISIBLE);
+                        wiresButton.setVisibility(View.VISIBLE);
+                        deleteButton.setVisibility(View.INVISIBLE);
+                        layerViewButton.setVisibility(View.INVISIBLE);
+                        //re-add editable functionality of object here
+                        //...
                     }
                 }
             });
@@ -234,6 +268,54 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
                 @Override
                 public void onClick(View v) {
                     showSettings(v);
+                }
+            });
+
+            //handle settings button in both design and create modes
+            wiresButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    /*if (toastMessage != null) {
+                        toastMessage.cancel();
+                    }
+                    toastMessage = Toast.makeText(ARviewActivity.this, "Wires button", Toast.LENGTH_SHORT);
+                    toastMessage.show();*/
+
+
+                    if(anchorNode!=null && clickNo>0) {
+                        drawLine(anchorNode, -0.1f, 0f, -0.1f, 0.1f, 0f, 0.1f);
+                        drawHighlightedCircle(anchorNode, 0.1f, 0.01f,0.1f, 0f, 0.1f, false);
+                    }
+                }
+            });
+
+            deleteButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    /*//Delete the Anchor if it exists
+                    //Log.d(TAG, "Deleteing anchor");
+                    int currentAnchorIndex;
+                    if (numberOfAnchors < 1) {
+                        Toast.makeText(ARviewActivity.this, "All nodes deleted", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    removeAnchorNode(currentSelectedAnchorNode);
+                    currentSelectedAnchorNode = null;
+
+                    //Remove the wiring if it also exists
+                    //removeLine(nodeForLine);*/
+                }
+            });
+
+            layerViewButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if(visualiseLayersOn==true){
+                        visualiseLayersOn=false;
+                    }
+                    else{
+                        visualiseLayersOn=true;
+                    }
                 }
             });
 
@@ -262,6 +344,121 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
             return false;
         }
     }
+
+
+    //%%%%%%%%%%%%%%%%%%%%%%%
+    /*private AnchorNode moveRenderable(AnchorNode markAnchorNodeToMove, Pose newPoseToMoveTo) {
+        //Move a renderable to a new pose
+        if (markAnchorNodeToMove != null) {
+            arCam.getArSceneView().getScene().removeChild(markAnchorNodeToMove);
+            anchorNodeList.remove(markAnchorNodeToMove);
+        } else {
+            Log.d(TAG,"moveRenderable - markAnchorNode was null, the little £$%^...");
+            return null;
+        }
+        Frame frame = arFragment.getArSceneView().getArFrame();
+        Session session = arFragment.getArSceneView().getSession();
+        Anchor markAnchor = session.createAnchor(newPoseToMoveTo.extractTranslation());
+        AnchorNode newMarkAnchorNode = new AnchorNode(markAnchor);
+        newMarkAnchorNode.setRenderable(andyRenderable);
+        newMarkAnchorNode.setParent(arFragment.getArSceneView().getScene());
+        anchorNodeList.add(newMarkAnchorNode);
+
+        //Delete the line if it is drawn
+        removeLine(nodeForLine);
+
+        return newMarkAnchorNode;
+    }*/
+    //%%%%%%%%%%%%%%%%%%%%%%%
+
+    private void drawLine(AnchorNode node1, float x1, float y1, float z1, float x2, float y2, float z2) { //Vector3 adaptedPosition1, Vector3 adaptedPosition2) {
+        Vector3 Point1 = node1.getWorldPosition();
+        Vector3 Point2 = node1.getWorldPosition();
+
+        Point1.x=Point1.x+x1;
+        Point1.y=Point1.y+y1;
+        Point1.z=Point1.z+z1;
+
+        Point2.x=Point2.x+x2;
+        Point2.y=Point2.y+y2;
+        Point2.z=Point2.z+z2;
+
+        //First, find the vector extending between the two points and define a look rotation
+        //in terms of this Vector.
+        final Vector3 difference = Vector3.subtract(Point1, Point2);
+        final Vector3 directionFromTopToBottom = difference.normalized();
+        final Quaternion rotationFromAToB = Quaternion.lookRotation(directionFromTopToBottom, Vector3.up());
+        com.google.ar.sceneform.rendering.Color newColor = new com.google.ar.sceneform.rendering.Color(0, 0, 255);
+        MaterialFactory.makeOpaqueWithColor(getApplicationContext(), newColor)
+                .thenAccept(
+                        material -> {
+                            /* Then, create a rectangular prism, using ShapeFactory.makeCube() and use the difference vector
+                                   to extend to the necessary length.  */
+                            //Log.d(TAG,"drawLine insie .thenAccept");
+                            ModelRenderable model = ShapeFactory.makeCube(
+                                    new Vector3(.01f, .01f, difference.length()),
+                                    Vector3.zero(), material);
+                            /* Last, set the world rotation of the node to the rotation calculated earlier and set the world position to
+                                   the midpoint between the given points . */
+                            Anchor lineAnchor = node1.getAnchor(); //changed to have anchor of node1...
+                            nodeForLine = new Node();
+                            nodeForLine.setParent(node1);
+                            nodeForLine.setRenderable(model);
+                            nodeForLine.setWorldPosition(Vector3.add(Point1, Point2).scaled(.5f));
+                            nodeForLine.setWorldRotation(rotationFromAToB);
+                        }
+                );
+    }
+
+    private void deleteRenderable(Node inputToDelete){
+        if (inputToDelete != null) {
+            //Log.e(TAG, "removeLine lineToRemove is not mull");
+            arCam.getArSceneView().getScene().removeChild(inputToDelete);
+            inputToDelete.setParent(null);
+            inputToDelete = null;
+        }
+    }
+
+
+    private void drawHighlightedCircle(AnchorNode node1, float radius, float height, float centreadjustx, float centreadjusty, float centreadjustz, boolean green) { //Vector3 adaptedPosition1, Vector3 adaptedPosition2) {
+        Vector3 cylinderLocation = node1.getWorldPosition();
+
+        cylinderLocation.x=cylinderLocation.x+centreadjustx;
+        cylinderLocation.y=cylinderLocation.y+centreadjusty;
+        cylinderLocation.z=cylinderLocation.z+centreadjustz;
+
+        //First, find the vector extending between the two points and define a look rotation
+        //in terms of this Vector.
+        //final Vector3 difference = Vector3.subtract(Point1, Point2);
+        //final Vector3 directionFromTopToBottom = difference.normalized();
+        //final Quaternion rotationFromAToB = Quaternion.lookRotation(directionFromTopToBottom, Vector3.up());
+        com.google.ar.sceneform.rendering.Color cylinderColor = new com.google.ar.sceneform.rendering.Color(255, 255, 255, 0f);
+        if(green=true){
+            cylinderColor = new com.google.ar.sceneform.rendering.Color(180, 0, 0, 128f);
+        }
+        else{
+            cylinderColor = new com.google.ar.sceneform.rendering.Color(180, 0, 0, 128f);
+        }
+        MaterialFactory.makeOpaqueWithColor(getApplicationContext(), cylinderColor)
+                .thenAccept(
+                        material -> {
+                            /* Then, create a rectangular prism, using ShapeFactory.makeCube() and use the difference vector
+                                   to extend to the necessary length.  */
+                            //Log.d(TAG,"drawLine insie .thenAccept");
+                            ModelRenderable model = ShapeFactory.makeCylinder(radius, height, cylinderLocation, material);
+                            /* Last, set the world rotation of the node to the rotation calculated earlier and set the world position to
+                                   the midpoint between the given points . */
+                            Anchor lineAnchor = node1.getAnchor(); //changed to have anchor of node1...
+                            nodeForLine = new Node();
+                            nodeForLine.setParent(node1);
+                            nodeForLine.setRenderable(model);
+                            nodeForLine.setWorldPosition(cylinderLocation);
+                            //nodeForLine.setWorldRotation(rotationFromAToB);
+                        }
+                );
+    }
+
+//makeCylinder(float radius, float height, Vector3 center, Material material)
 
     public void showSettings(View v) {
         level = getIntSetting("level");
@@ -379,6 +576,7 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
     private void implementScript() {
         TextView topTextInstructions = findViewById(R.id.createmode_top_text_instructions);
         SeekBar slider = findViewById(R.id.createmode_seekbar);
+        ImageView changingImageView = findViewById(R.id.changingImageView);
         int progressIncrementor = slider.getProgress();
         if (novicelevel == 0) {
             if (scriptCounter == 0) {
@@ -395,38 +593,110 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
         //set progressIncrementor based on where the script is
         if (scriptCounter == 0) {
             progressIncrementor = 0;// and update...
-            toastMessage = Toast.makeText(ARviewActivity.this, "Phase " + sliderChangedValue + ": intro", Toast.LENGTH_SHORT);
-            toastMessage.show();
+            //toastMessage = Toast.makeText(ARviewActivity.this, "Phase " + sliderChangedValue + ": intro", Toast.LENGTH_SHORT);
+            //toastMessage.show();
         }
+        if(scriptCounter == 1) {
+            displayImageFor3Secs(changingImageView, R.drawable.image_name2, 0.32f); //phone image
+        }
+        //////////////////////phase1
         if (scriptCounter == 3) {
             progressIncrementor = 1;// and update...
-            toastMessage = Toast.makeText(ARviewActivity.this, "Phase " + sliderChangedValue + ": Spraying Base electrode", Toast.LENGTH_SHORT);
-            toastMessage.show();
+            //toastMessage = Toast.makeText(ARviewActivity.this, "Phase " + sliderChangedValue + ": Spraying Base electrode", Toast.LENGTH_SHORT);
+            //toastMessage.show();
+            displayImageFor3Secs(changingImageView, R.drawable.image_name2, 0.32f); //backplane image
         }
+        if(scriptCounter == 4) {
+            displayImageFor3Secs(changingImageView, R.drawable.image_name2, 0.32f); //PPE image
+        }
+        if(scriptCounter == 7) {
+            displayImageFor3Secs(changingImageView, R.drawable.image_name2, 0.32f); //Compressor image
+        }
+        if(scriptCounter == 10) {
+            displayImageFor3Secs(changingImageView, R.drawable.image_name2, 0.32f); //Stencil image
+        }
+        if(scriptCounter == 12) {
+            //15 minute timer
+        }
+        //////////////////////phase2
         if (scriptCounter == 14) {
             progressIncrementor = 2;// and update...
-            toastMessage = Toast.makeText(ARviewActivity.this, "Phase " + sliderChangedValue + ": Spraying dielectric", Toast.LENGTH_SHORT);
-            toastMessage.show();
+            //toastMessage = Toast.makeText(ARviewActivity.this, "Phase " + sliderChangedValue + ": Spraying dielectric", Toast.LENGTH_SHORT);
+            //toastMessage.show();
+            displayImageFor3Secs(changingImageView, R.drawable.image_name2, 0.43f); //dielectric image
         }
+        if(scriptCounter == 15) {
+            displayImageFor3Secs(changingImageView, R.drawable.image_name2, 0.43f); //PPE image
+        }
+        if(scriptCounter == 21) {
+            //15 minute timer
+        }
+        //////////////////////phase3
         if (scriptCounter == 23) {
             progressIncrementor = 3;// and update...
-            toastMessage = Toast.makeText(ARviewActivity.this, "Phase " + sliderChangedValue + ": Spraying electroluminescent coat", Toast.LENGTH_SHORT);
-            toastMessage.show();
+            //toastMessage = Toast.makeText(ARviewActivity.this, "Phase " + sliderChangedValue + ": Spraying electroluminescent coat", Toast.LENGTH_SHORT);
+            //toastMessage.show();
+            displayImageFor3Secs(changingImageView, R.drawable.image_name2, 0.55f); //electroluminescent image
         }
+        if(scriptCounter == 24) {
+            displayImageFor3Secs(changingImageView, R.drawable.image_name2, 0.55f); //PPE image
+        }
+        if(scriptCounter == 31) {
+            //15 minute timer
+        }
+        //////////////////////phase4
         if (scriptCounter == 33) {
             progressIncrementor = 4;// and update...
-            toastMessage = Toast.makeText(ARviewActivity.this, "Phase " + sliderChangedValue + ": Spraying transparent conductive electrode", Toast.LENGTH_SHORT);
-            toastMessage.show();
+            //toastMessage = Toast.makeText(ARviewActivity.this, "Phase " + sliderChangedValue + ": Spraying transparent conductive electrode", Toast.LENGTH_SHORT);
+            //toastMessage.show();
+            displayImageFor3Secs(changingImageView, R.drawable.image_name2, 0.68f); //PEDOT image
         }
+        if(scriptCounter == 34) {
+            displayImageFor3Secs(changingImageView, R.drawable.image_name2, 0.68f ); //PPE image
+        }
+        if(scriptCounter == 36) {
+            displayImageFor3Secs(changingImageView, R.drawable.image_name2, 0.68f ); //compressor image
+        }
+        if(scriptCounter == 40) {
+            //15 minute timer
+        }
+        //////////////////////phase5
         if (scriptCounter == 43) {
             progressIncrementor = 5;// and update...
-            toastMessage = Toast.makeText(ARviewActivity.this, "Phase " + sliderChangedValue + ": Electrode attachment", Toast.LENGTH_SHORT);
-            toastMessage.show();
+            //toastMessage = Toast.makeText(ARviewActivity.this, "Phase " + sliderChangedValue + ": Electrode attachment", Toast.LENGTH_SHORT);
+            //toastMessage.show();
+            displayImageFor3Secs(changingImageView, R.drawable.image_name2, 0.80f); //Control image
+        }
+        if(scriptCounter == 44) {
+            displayImageFor3Secs(changingImageView, R.drawable.image_name2, 0.80f ); //multimeter image
+        }
+        if(scriptCounter == 46) {
+            displayImageFor3Secs(changingImageView, R.drawable.image_name2, 0.80f ); //electrodes image
+        }
+        if(scriptCounter == 51) {
+            displayImageFor3Secs(changingImageView, R.drawable.image_name2, 0.80f ); //fireworks image
         }
         if (progressIncrementor <= slider.getMax()) {
             slider.setProgress(progressIncrementor);
         }
         uvControl();
+    }
+
+    private void displayImageFor3Secs(ImageView inputImageView, int resourceId, float horizontalSkew){
+        if(level==1) {
+            ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) inputImageView.getLayoutParams();
+            params.horizontalBias = horizontalSkew; // here is one modification for example. modify anything else you want :)
+            inputImageView.setLayoutParams(params);
+            inputImageView.setVisibility(View.VISIBLE);
+            findViewById(R.id.changingImageView).postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    inputImageView.setVisibility(View.INVISIBLE);
+                    inputImageView.setImageResource(resourceId); //set image
+                    //inputImageView.margin(left, top, right, bottom);
+                }
+            }, 3000);
+        }
     }
 
     //method to set script number when progress bar is changed (N.B. the other way around is handled within "implementScript()"), use should always be followed by implementscript()
@@ -495,20 +765,6 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
                 //model.setRenderable(newRenderable);
             }
         });
-    }
-
-    //alternative mode where object is fixed/editting no longer enabled and script/progress bar/forwardsback buttons are implemented
-    private void createMode() {
-        novicelevel = 1;
-    }
-
-    private void toggleExperience() {
-        /*if(novicelevel==0){
-            novicelevel=1;
-        }
-        else {
-            novicelevel=0;
-        }*/
     }
 
     private void addModel(Anchor mainanchor, ModelRenderable modelRenderable) {
