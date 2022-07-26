@@ -627,7 +627,7 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
         //clear popup image each time button is pressed...
         changingImageView.setVisibility(View.INVISIBLE);
 
-        if (scriptCounter != 12 && tvTimer != null){
+        if (scriptCounter != 12 && scriptCounter != 21 && scriptCounter != 31 && scriptCounter != 40 && tvTimer != null){
             timer.cancel();
             tvTimer.setVisibility(View.GONE);
             tvTimer = null;
@@ -724,7 +724,7 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
             //toastMessage.show();
             topTextInstructions.setTextSize(20);
             setTextBoxColour(R.drawable.greentextbackground);
-            displayImageFor3Secs(changingImageView, R.drawable.lumicolour, 0.68f); //PEDOT image - TO CHANGE!!!!!
+            displayImageFor3Secs(changingImageView, R.drawable.pedot, 0.68f); //PEDOT image
         }
         if(scriptCounter == 34) {
             displayImageFor3Secs(changingImageView, R.drawable.respirator, 0.68f ); //PPE image
@@ -963,7 +963,7 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
     public TextView tvTimer;
     public CountDownTimer timer;
     private void countDownStart() {
-        if (scriptCounter == 12) {
+        if (scriptCounter == 12 || scriptCounter == 21 || scriptCounter == 31 || scriptCounter == 40) {
             tvTimer = findViewById(R.id.timer);
             timer = new CountDownTimer(15 * 60000, 1000) {
                 public void onTick(long millisUntilFinished) {
