@@ -1,9 +1,6 @@
 package com.example.ar_airbrush_second;
 
-import androidx.annotation.RequiresApi;
-import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
 
 import android.app.Activity;
 import android.app.ActivityManager;
@@ -13,16 +10,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 //import android.view.MotionEvent;
+import android.os.CountDownTimer;
+import android.os.Handler;
 import android.os.IBinder;
-import android.text.Editable;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -32,9 +28,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.ar_airbrush_second.bluetooth.SerialService;
-import com.example.ar_airbrush_second.bluetooth.TerminalFragment;
-import com.google.android.filament.MaterialInstance;
-import com.google.android.filament.TextureSampler;
+import com.example.ar_airbrush_second.bluetooth.CommsFragment;
 import com.google.android.filament.gltfio.FilamentAsset;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.ar.core.Anchor;
@@ -42,10 +36,8 @@ import com.google.ar.core.Anchor;
 //import com.google.ar.core.Plane;
 import com.google.ar.core.Frame;
 import com.google.ar.sceneform.AnchorNode;
-import com.google.ar.sceneform.ArSceneView;
 import com.google.ar.sceneform.FrameTime;
 import com.google.ar.sceneform.Scene;
-import com.google.ar.sceneform.math.Vector3;
 import com.google.ar.sceneform.rendering.Light;
 import com.google.ar.sceneform.rendering.ModelRenderable;
 //import com.google.ar.sceneform.rendering.Renderable;
@@ -53,25 +45,21 @@ import com.google.ar.sceneform.ux.ArFragment;
 //import com.google.ar.sceneform.ux.BaseArFragment;
 import com.google.ar.sceneform.ux.TransformableNode;
 
-import com.google.ar.sceneform.rendering.Material;
-import com.google.ar.sceneform.rendering.MaterialFactory;
-
 import com.google.ar.core.Pose;
 
 
 //import java.lang.ref.WeakReference;
-import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Objects;
 import java.lang.Math;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 
 public class ARviewActivity extends AppCompatActivity implements ServiceConnection, PopupMenu.OnMenuItemClickListener, Scene.OnUpdateListener {
 
     //AR related:
-        // object of ArFragment Class
+    // object of ArFragment Class
     private ArFragment arCam;
-        //helps to render the 3d model only once when we tap the screen
+    //helps to render the 3d model only once when we tap the screen
     private int clickNo = 0;
 
     public TransformableNode model;
@@ -344,6 +332,7 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
                 laser = !item.isChecked();
                 item.setChecked(laser);
                 saveBoolSetting("laser", laser);
+                laserControl();
                 if (toastMessage != null) {
                     toastMessage.cancel();
                 }
@@ -389,6 +378,12 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
                 //if tip_script_x != null then implement as a toast
             }
         }
+        if (scriptCounter != 12 && tvTimer != null){
+            timer.cancel();
+            tvTimer.setVisibility(View.GONE);
+            tvTimer = null;
+
+        }
         if (toastMessage != null) {
             toastMessage.cancel();
         }
@@ -402,6 +397,9 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
             progressIncrementor = 1;// and update...
             toastMessage = Toast.makeText(ARviewActivity.this, "Phase " + sliderChangedValue + ": Spraying Base electrode", Toast.LENGTH_SHORT);
             toastMessage.show();
+        }
+        if (scriptCounter == 12) {
+            countDownStart();
         }
         if (scriptCounter == 14) {
             progressIncrementor = 2;// and update...
@@ -578,36 +576,56 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
 
             ///Compute the straight-line distance. Round value to 2dp in the process:
             float distanceMeters = (float) Math.sqrt(dx * dx + dy * dy + dz * dz);
-            distanceMeters=distanceMeters*100;
+            distanceMeters = distanceMeters * 100;
             distanceMeters = Math.round(distanceMeters);
-            int intDistanceMeters = (int)distanceMeters;
+            int intDistanceMeters = (int) distanceMeters;
             //update text view with distance as phone moves - subtract length of the airbrush for distance from nozzle to object...
             substrateDistance.setText(intDistanceMeters + "cm");
 
             //calculate cost, round value to 2dp in the process:
             float scale = model.getWorldScale().x;
-            double cost = design1cost*scale;
-            cost=cost*100;
+            double cost = design1cost * scale;
+            cost = cost * 100;
             cost = Math.round(cost);
-            cost=cost/100;
+            cost = cost / 100;
             costEvaluator.setText("£" + cost);
 
             //Handle trigger press and warning that you might be too far away...:
-            if(triggerPress==true){
-                if(distanceMeters>45){
+            if (triggerPress == true) {
+                if (distanceMeters > 45) {
                     //return error message that airbrush might be too far away from substrate.
                     /*if (toastMessage!= null) {
                         toastMessage.cancel();
                     }*/
-                    toastMessage=Toast.makeText(ARviewActivity.this, distanceMeters + "Warning: spraying occuring greater than optimal distance from substrate", Toast.LENGTH_LONG);
+                    toastMessage = Toast.makeText(ARviewActivity.this, distanceMeters + "Warning: spraying occuring greater than optimal distance from substrate", Toast.LENGTH_LONG);
                     toastMessage.show();
-                }
-                else {
+                } else {
                     //functionality to add feedback for where the user has sprayed... - add circles and find intersection...
                 }
             }
         }
     }
+
+    //region Timer
+    public TextView tvTimer;
+    public CountDownTimer timer;
+    private void countDownStart() {
+        if (scriptCounter == 12) {
+            tvTimer = findViewById(R.id.timer);
+            timer = new CountDownTimer(15 * 60000, 1000) {
+                public void onTick(long millisUntilFinished) {
+                    tvTimer.setText(new SimpleDateFormat("mm:ss").format(new Date(millisUntilFinished)));
+                    tvTimer.setTextSize(100);
+                    tvTimer.setVisibility(View.VISIBLE);
+                }
+                public void onFinish() {
+                    tvTimer.setText("Your material should be touch dry.\nPlease proceed to the next stage!");
+                    tvTimer.setTextSize(30);
+                }
+            }.start();
+        }
+    }
+    //endregion
 
     //region Settings methods
     private boolean getBoolSetting(String key) {
@@ -634,14 +652,23 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
         editor.commit();
     }
 
+    private String getStrSetting(String key) {
+        SharedPreferences preferences = getApplicationContext().getSharedPreferences("settings", android.content.Context.MODE_PRIVATE);
+        return preferences.getString(key, "");
+    }
+
+    private void saveStrSetting(String key, String value) {
+        SharedPreferences preferences = getApplicationContext().getSharedPreferences("settings", android.content.Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putString(key, value);
+        editor.commit();
+    }
     //endregion
 
     //region BT Commands
-    private int forceState;
-    public String btMessage;
-
     private void uvControl() {
         // UV On/Off
+        uv = getBoolSetting("uv");
         if (uv) {
             if (toastMessage != null) {
                 toastMessage.cancel();
@@ -663,45 +690,66 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
     }
 
     private void laserControl() {
-        // TODO send laser on msg
+        laser = getBoolSetting("laser");
+        if (laser) send("<LASER ON>");
+        else send("<LASER OFF>");
     }
 
     public void tactileButtons() {
-//        Log.d("BUTTON", btMessage);
-        if (Objects.equals(btMessage, "fwd")) {
-            Log.d("BUTTON", btMessage);
-            if (scriptCounter < 51) {
-                scriptCounterLast = scriptCounter;
-                scriptCounter++;
+        if (toggleMode == 1) {
+            if (Objects.equals(storedMessage, "fwd")) {
+                if (scriptCounter < 51) {
+                    scriptCounterLast = scriptCounter;
+                    scriptCounter++;
+                }
+                implementScript();
             }
-            implementScript();
+            if (Objects.equals(storedMessage, "bck")) {
+                if (scriptCounter > 0) {
+                    scriptCounterLast = scriptCounter;
+                    scriptCounter--;
+                }
+                implementScript();
+            }
         }
-        if (Objects.equals(btMessage, "bck")) {
-            Log.d("BUTTON", btMessage);
-            if (scriptCounter > 0) {
-                scriptCounterLast = scriptCounter;
-                scriptCounter--;
+    }
+
+    public void triggerControl(){
+        if (toggleMode == 1) {
+            if (Objects.equals(storedMessage, "pressed")) {
+                triggerPress = true;
             }
-            implementScript();
+            if (Objects.equals(storedMessage, "released")) {
+                triggerPress = false;
+            }
         }
     }
     //endregion
 
     //region BT Service
     private SerialService service;
-    public TerminalFragment.Connected connected;
+    public CommsFragment.Connected connected;
+    public String storedMessage;
 
     @Override
     public void onResume() {
         super.onResume();
         Intent intent = new Intent(this, SerialService.class);
         this.bindService(intent, this, Context.BIND_AUTO_CREATE);
+
+        receiveHandler.postDelayed(receiveRunnable, 1);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        receiveHandler.removeCallbacks(receiveRunnable);
     }
 
     @Override
     public void onServiceConnected(ComponentName name, IBinder binder) {
         service = ((SerialService.SerialBinder) binder).getService();
-        connected = TerminalFragment.Connected.True;
+        connected = CommsFragment.Connected.True;
     }
 
     @Override
@@ -710,7 +758,7 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
     }
 
     public void send(String str) {
-        if (connected != TerminalFragment.Connected.True) {
+        if (connected != CommsFragment.Connected.True) {
             Toast.makeText(this, "not connected", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -723,9 +771,25 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
         }
     }
 
-    public void receive(byte[] data) {
-        btMessage = new String(data, StandardCharsets.UTF_8);
-        Log.d("MESSAGE RECEIVED", btMessage);
+    public void receiveMSG() {
+        storedMessage = getStrSetting("btMessage");
+        if (storedMessage != null) {
+            tactileButtons();
+            triggerControl();
+        }
+        saveStrSetting("btMessage", "");
     }
     //endregion
+
+    //region Constantly Run
+    Runnable receiveRunnable = new Runnable() {
+        @Override
+        public void run() {
+            receiveMSG();
+            receiveHandler.postDelayed(receiveRunnable, 1);
+        }
+    };
+    Handler receiveHandler = new Handler();
+    //endregion
 }
+

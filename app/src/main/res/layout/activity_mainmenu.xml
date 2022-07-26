@@ -70,14 +70,4 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/bt" />
 
-    <ImageButton
-        android:id="@+id/settings_drop_down_menu"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_margin="8dp"
-        app:srcCompat="@drawable/new_settings_48"
-        android:background="@null"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"  />
-
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -6,9 +6,10 @@
         <entry key="..\:/Coding/Android/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.197" />
         <entry key="..\:/Coding/Android/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/drawable/ic_launcher_background.xml" value="0.197" />
         <entry key="..\:/Coding/Android/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/drawable/ic_notification.xml" value="0.1425" />
-        <entry key="..\:/Coding/Android/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/layout/activity_arview.xml" value="0.1484375" />
+        <entry key="..\:/Coding/Android/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/layout/activity_arview.xml" value="0.4" />
         <entry key="..\:/Coding/Android/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/layout/activity_bluetooth.xml" value="0.1515625" />
         <entry key="..\:/Coding/Android/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/layout/activity_btcomms.xml" value="0.1125" />
+        <entry key="..\:/Coding/Android/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/layout/activity_designchoice.xml" value="0.18854166666666666" />
         <entry key="..\:/Coding/Android/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/layout/activity_mainmenu.xml" value="0.176" />
         <entry key="..\:/Coding/Android/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/layout/activity_preferences.xml" value="0.176" />
         <entry key="..\:/Coding/Android/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/layout/activity_prefmenu.xml" value="0.264" />
@@ -22,6 +23,8 @@
         <entry key="..\:/Coding/Android/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/layout/fragment_select_device.xml" value="0.25226449275362317" />
         <entry key="..\:/Coding/Android/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/layout/fragment_terminal.xml" value="0.176" />
         <entry key="..\:/Coding/Android/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/layout/select_device.xml" value="0.2015625" />
+        <entry key="..\:/Coding/Android/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/layout/test.xml" value="0.20897435897435898" />
+        <entry key="..\:/Coding/Android/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/layout/timer.xml" value="0.18854166666666666" />
         <entry key="..\:/Coding/Android/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/menu/menu_devices.xml" value="0.1890625" />
         <entry key="..\:/Coding/Android/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/menu/menu_settings.xml" value="0.2015625" />
         <entry key="..\:/Coding/Android/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/xml/preferences.xml" value="0.264" />

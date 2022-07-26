@@ -26,7 +26,7 @@
     <string name="script_11">When you have finished spraying, return the unused paint to the bottle.</string>
     <string name="script_12">Now wait at least 15 minutes for paint to dry. Use this time to clean out your airbrush.</string>
     <string name="tip_script_12">Tip: remove the ergonomic casing to make cleaning easier and disassemble airbrush to access parts.</string>
-                <!--onscreen timer, disappaears when finished-->
+                <!--onscreen timer, disappears when finished-->
     <string name="script_13">You are now ready to move onto phase 2 - spraying the dielectric.</string>
 
     <!--Spraying layer 2, dielectric-->
