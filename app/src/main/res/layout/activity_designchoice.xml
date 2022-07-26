@@ -110,14 +110,14 @@
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
-                android:src="@drawable/image_name2" />
+                android:src="@drawable/temp_application_genders" />
 
             <ImageView
                 android:id="@+id/imageView2"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
-                android:src="@drawable/image_name2" />
+                android:src="@drawable/temp_application_house" />
         </LinearLayout>
         <LinearLayout
             android:layout_height="360dp"
@@ -128,14 +128,14 @@
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
-                android:src="@drawable/image_name2" />
+                android:src="@drawable/temp_application_exit" />
 
             <ImageView
                 android:id="@+id/imageView4"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
-                android:src="@drawable/image_name2" />
+                android:src="@drawable/temp_application_house" />
         </LinearLayout>
         <!--<ImageView
             android:id="@+id/imageView1"

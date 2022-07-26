@@ -23,6 +23,27 @@
     <color name="burntorange">#FF8C3300</color>
     <color name="orange">#FFD95002</color>
 
+    <!-- seekbar palette, d for desaturated: https://www.schemecolor.com/desaturated-rainbow.php-->
+    <color name="dred">#9B4244</color>
+    <color name="dorange">#A66A40</color>
+    <color name="dyellow">#B7AA5E</color>
+    <color name="dgreen">#569556</color>
+    <color name="dblue">#4C709A</color>
+    <color name="ddarkgrey">#838383</color>
 
+    <!-- seekbar palette2, s for second: https://www.schemecolor.com/kids-rainbow.php-->
+    <color name="sred">#D62226</color>
+    <color name="sorange">#E88012</color>
+    <color name="syellow">#F5C603</color>
+    <color name="sgreen">#4DE94C</color>
+    <color name="sblue">#1FC3CD</color>
+    <color name="sdarkgrey">#838383</color>
+
+    <!-- seekbar palette2, s for second: https://www.schemecolor.com/kids-rainbow.php-->
+    <color name="tred">#7FD62226</color>
+    <color name="torange">#7FE88012</color>
+    <color name="tyellow">#7FF5C603</color>
+    <color name="tgreen">#7F4DE94C</color>
+    <color name="tblue">#7F1FC3CD</color>
 
 </resources>

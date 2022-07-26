@@ -4,6 +4,7 @@ import androidx.annotation.RequiresApi;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
 
 import android.app.Activity;
 import android.app.ActivityManager;
@@ -14,6 +15,8 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.ShapeDrawable;
 import android.os.Build;
 import android.os.Bundle;
 //import android.view.MotionEvent;
@@ -94,7 +97,7 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
 
     //Novice level (with text) or expert level (no text) - scale chosen for create mode... toggled flag.
     //Novice =0, intermediate =1, expert =2
-    private int novicelevel = 0;
+    private int novicelevel = 1;
 
     //slider value - equivalent to spraying phase between 0 and 5
     private int sliderChangedValue;
@@ -111,6 +114,8 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
     private List<AnchorNode> anchorNodeList = new ArrayList<>();
     private Node nodeForLine;
     public boolean objectFlag = false;
+
+    public boolean imageBeingPoppedupFlag = false;
 
     Toast toastMessage;
 
@@ -129,7 +134,7 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_arview);
-
+        getSupportActionBar().hide();
 
         if (checkSystemSupport(this)) {
 
@@ -176,15 +181,30 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
             backButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    /*int progressIncrementor=slider.getProgress();
-                    progressIncrementor--;
-                    if(progressIncrementor>=0 && progressIncrementor<=slider.getMax()) {
-                        slider.setProgress(progressIncrementor);
-                    }*/
-                    //remove the progress incrementor above and put the functionality into implementScript...
                     if (scriptCounter > 0) {
                         scriptCounterLast = scriptCounter;
                         scriptCounter--;
+                    }
+                    //fixing going back into previous stages...
+                    if (scriptCounter == 2) {
+                        slider.setProgress(0);
+                        scriptCounter=2;
+                    }
+                    if (scriptCounter == 13) {
+                        slider.setProgress(1);
+                        scriptCounter=13;
+                    }
+                    if (scriptCounter == 22) {
+                        slider.setProgress(2);
+                        scriptCounter=22;
+                    }
+                    if (scriptCounter == 32) {
+                        slider.setProgress(3);
+                        scriptCounter=32;
+                    }
+                    if (scriptCounter == 41) {
+                        slider.setProgress(4);
+                        scriptCounter=41;
                     }
                     implementScript();
                 }
@@ -221,6 +241,9 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
             toggleButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    //reformat text for when the user toggles in or out...
+                    topTextInstructions.setTextSize(14);
+                    setTextBoxColour(R.drawable.tealtextbackground);
                     if (toggleMode == 0) {
                         //set create mode
                         costEvaluator.setVisibility(View.INVISIBLE);
@@ -434,10 +457,10 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
         //final Quaternion rotationFromAToB = Quaternion.lookRotation(directionFromTopToBottom, Vector3.up());
         com.google.ar.sceneform.rendering.Color cylinderColor = new com.google.ar.sceneform.rendering.Color(255, 255, 255, 0f);
         if(green=true){
-            cylinderColor = new com.google.ar.sceneform.rendering.Color(180, 0, 0, 128f);
+            cylinderColor = new com.google.ar.sceneform.rendering.Color(0, 255, 0, 128f);
         }
         else{
-            cylinderColor = new com.google.ar.sceneform.rendering.Color(180, 0, 0, 128f);
+            cylinderColor = new com.google.ar.sceneform.rendering.Color(255, 0, 0, 128f);
         }
         MaterialFactory.makeOpaqueWithColor(getApplicationContext(), cylinderColor)
                 .thenAccept(
@@ -577,104 +600,155 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
         TextView topTextInstructions = findViewById(R.id.createmode_top_text_instructions);
         SeekBar slider = findViewById(R.id.createmode_seekbar);
         ImageView changingImageView = findViewById(R.id.changingImageView);
+        TextView tipTextView = findViewById(R.id.createmode_tips);
         int progressIncrementor = slider.getProgress();
-        if (novicelevel == 0) {
-            if (scriptCounter == 0) {
-                topTextInstructions.setText(getString(R.string.create_mode_welcome));
-            } else {
-                int resourceId = this.getResources().getIdentifier("script_" + scriptCounter, "string", this.getPackageName());
-                topTextInstructions.setText(getString(resourceId));
-                //if tip_script_x != null then implement as a toast
-            }
+        topTextInstructions.setTextSize(14);
+        if (scriptCounter == 0) {
+            topTextInstructions.setText(getString(R.string.create_mode_welcome));
+        } else {
+            int resourceId = this.getResources().getIdentifier("script_" + scriptCounter, "string", this.getPackageName());
+            topTextInstructions.setText(getString(resourceId));
+            //if tip_script_x != null then implement as a toast
         }
+
+        //implement tips when novice level is 1 and make invisible in all other circumstances.
+        int tipResourceId = 0;
+        tipResourceId = this.getResources().getIdentifier("tip_script_" + scriptCounter, "string", this.getPackageName());
+        if (tipResourceId == 0) {
+            tipTextView.setVisibility(View.INVISIBLE);
+        } else if (novicelevel == 1) {
+            tipTextView.setText(getString(tipResourceId));
+            tipTextView.setVisibility(View.VISIBLE);
+        } else {
+            tipTextView.setVisibility(View.INVISIBLE);
+        }
+
+        //clear popup image each time button is pressed...
+        changingImageView.setVisibility(View.INVISIBLE);
+
         if (toastMessage != null) {
             toastMessage.cancel();
         }
+        //toastMessage = Toast.makeText(ARviewActivity.this, "Script " + tipResourceId, Toast.LENGTH_SHORT);
+        //toastMessage.show();
         //set progressIncrementor based on where the script is
         if (scriptCounter == 0) {
             progressIncrementor = 0;// and update...
             //toastMessage = Toast.makeText(ARviewActivity.this, "Phase " + sliderChangedValue + ": intro", Toast.LENGTH_SHORT);
             //toastMessage.show();
         }
-        if(scriptCounter == 1) {
-            displayImageFor3Secs(changingImageView, R.drawable.image_name2, 0.32f); //phone image
+        if (scriptCounter == 1) {
+            displayImageFor3Secs(changingImageView, R.drawable.phone_in_hand, 0.21f); //phone image
+            setTextBoxColour(R.drawable.tealtextbackground);
+        }
+        if (scriptCounter == 2) {
+            setTextBoxColour(R.drawable.tealtextbackground);
         }
         //////////////////////phase1
         if (scriptCounter == 3) {
             progressIncrementor = 1;// and update...
             //toastMessage = Toast.makeText(ARviewActivity.this, "Phase " + sliderChangedValue + ": Spraying Base electrode", Toast.LENGTH_SHORT);
             //toastMessage.show();
-            displayImageFor3Secs(changingImageView, R.drawable.image_name2, 0.32f); //backplane image
+            topTextInstructions.setTextSize(20);
+            setTextBoxColour(R.drawable.redtextbackground);
+            displayImageFor3Secs(changingImageView, R.drawable.backplane, 0.32f); //backplane image
         }
-        if(scriptCounter == 4) {
-            displayImageFor3Secs(changingImageView, R.drawable.image_name2, 0.32f); //PPE image
+        if (scriptCounter == 4) {
+            displayImageFor3Secs(changingImageView, R.drawable.respirator, 0.32f); //PPE image
         }
-        if(scriptCounter == 7) {
-            displayImageFor3Secs(changingImageView, R.drawable.image_name2, 0.32f); //Compressor image
+        if (scriptCounter == 7) {
+            displayImageFor3Secs(changingImageView, R.drawable.compressor, 0.32f); //Compressor image
         }
-        if(scriptCounter == 10) {
-            displayImageFor3Secs(changingImageView, R.drawable.image_name2, 0.32f); //Stencil image
+        if (scriptCounter == 10) {
+            displayImageFor3Secs(changingImageView, R.drawable.french_curve4, 0.32f); //Stencil image
         }
-        if(scriptCounter == 12) {
+        if (scriptCounter == 12) {
             //15 minute timer
+        }
+        if (scriptCounter == 13) {
+            setTextBoxColour(R.drawable.redtextbackground);
         }
         //////////////////////phase2
         if (scriptCounter == 14) {
             progressIncrementor = 2;// and update...
             //toastMessage = Toast.makeText(ARviewActivity.this, "Phase " + sliderChangedValue + ": Spraying dielectric", Toast.LENGTH_SHORT);
             //toastMessage.show();
-            displayImageFor3Secs(changingImageView, R.drawable.image_name2, 0.43f); //dielectric image
+            topTextInstructions.setTextSize(20);
+            setTextBoxColour(R.drawable.orangetextbackground);
+            displayImageFor3Secs(changingImageView, R.drawable.dielectric, 0.43f); //dielectric image
         }
-        if(scriptCounter == 15) {
-            displayImageFor3Secs(changingImageView, R.drawable.image_name2, 0.43f); //PPE image
+        if (scriptCounter == 15) {
+            displayImageFor3Secs(changingImageView, R.drawable.respirator, 0.43f); //PPE image
         }
-        if(scriptCounter == 21) {
+        if (scriptCounter == 17) {
+            displayImageFor3Secs(changingImageView, R.drawable.compressor, 0.43f); //Compressor image
+        }
+        if (scriptCounter == 21) {
             //15 minute timer
+        }
+        if (scriptCounter == 22) {
+            setTextBoxColour(R.drawable.orangetextbackground);
         }
         //////////////////////phase3
         if (scriptCounter == 23) {
             progressIncrementor = 3;// and update...
             //toastMessage = Toast.makeText(ARviewActivity.this, "Phase " + sliderChangedValue + ": Spraying electroluminescent coat", Toast.LENGTH_SHORT);
             //toastMessage.show();
-            displayImageFor3Secs(changingImageView, R.drawable.image_name2, 0.55f); //electroluminescent image
+            topTextInstructions.setTextSize(20);
+            setTextBoxColour(R.drawable.yellowtextbackground);
+            displayImageFor3Secs(changingImageView, R.drawable.lumicolour, 0.55f); //electroluminescent image
         }
-        if(scriptCounter == 24) {
-            displayImageFor3Secs(changingImageView, R.drawable.image_name2, 0.55f); //PPE image
+        if (scriptCounter == 24) {
+            displayImageFor3Secs(changingImageView, R.drawable.respirator, 0.55f); //PPE image
         }
-        if(scriptCounter == 31) {
+        if (scriptCounter == 27) {
+            displayImageFor3Secs(changingImageView, R.drawable.compressor, 0.55f); //Compressor image
+        }
+        if (scriptCounter == 31) {
             //15 minute timer
+        }
+        if (scriptCounter == 32) {
+            setTextBoxColour(R.drawable.yellowtextbackground);
         }
         //////////////////////phase4
         if (scriptCounter == 33) {
             progressIncrementor = 4;// and update...
             //toastMessage = Toast.makeText(ARviewActivity.this, "Phase " + sliderChangedValue + ": Spraying transparent conductive electrode", Toast.LENGTH_SHORT);
             //toastMessage.show();
-            displayImageFor3Secs(changingImageView, R.drawable.image_name2, 0.68f); //PEDOT image
+            topTextInstructions.setTextSize(20);
+            setTextBoxColour(R.drawable.greentextbackground);
+            displayImageFor3Secs(changingImageView, R.drawable.lumicolour, 0.68f); //PEDOT image - TO CHANGE!!!!!
         }
         if(scriptCounter == 34) {
-            displayImageFor3Secs(changingImageView, R.drawable.image_name2, 0.68f ); //PPE image
+            displayImageFor3Secs(changingImageView, R.drawable.respirator, 0.68f ); //PPE image
         }
         if(scriptCounter == 36) {
-            displayImageFor3Secs(changingImageView, R.drawable.image_name2, 0.68f ); //compressor image
+            displayImageFor3Secs(changingImageView, R.drawable.compressor, 0.68f ); //compressor image
         }
         if(scriptCounter == 40) {
             //15 minute timer
         }
+        if(scriptCounter == 41) {
+            setTextBoxColour(R.drawable.greentextbackground);
+        }
         //////////////////////phase5
-        if (scriptCounter == 43) {
+        if (scriptCounter == 42) {
             progressIncrementor = 5;// and update...
             //toastMessage = Toast.makeText(ARviewActivity.this, "Phase " + sliderChangedValue + ": Electrode attachment", Toast.LENGTH_SHORT);
             //toastMessage.show();
-            displayImageFor3Secs(changingImageView, R.drawable.image_name2, 0.80f); //Control image
+            topTextInstructions.setTextSize(20);
+            setTextBoxColour(R.drawable.bluetextbackground);
+            displayImageFor3Secs(changingImageView, R.drawable.control, 0.80f); //Control image
         }
         if(scriptCounter == 44) {
-            displayImageFor3Secs(changingImageView, R.drawable.image_name2, 0.80f ); //multimeter image
+            displayImageFor3Secs(changingImageView, R.drawable.multimeter, 0.80f ); //multimeter image
         }
         if(scriptCounter == 46) {
-            displayImageFor3Secs(changingImageView, R.drawable.image_name2, 0.80f ); //electrodes image
+            displayImageFor3Secs(changingImageView, R.drawable.electrode_attachment2, 0.80f ); //electrodes image
         }
         if(scriptCounter == 51) {
-            displayImageFor3Secs(changingImageView, R.drawable.image_name2, 0.80f ); //fireworks image
+            displayImageFor3Secs(changingImageView, R.drawable.fireworks2, 0.80f ); //fireworks image
+            setTextBoxColour(R.drawable.bluetextbackground);
         }
         if (progressIncrementor <= slider.getMax()) {
             slider.setProgress(progressIncrementor);
@@ -682,20 +756,34 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
         uvControl();
     }
 
+    private void setTextBoxColour(int colour){
+        TextView topTextInstructions = findViewById(R.id.createmode_top_text_instructions);
+        TextView tipTextView = findViewById(R.id.createmode_tips);
+        Drawable background = ContextCompat.getDrawable(ARviewActivity.this, colour);
+        topTextInstructions.setBackground(background);
+        //tipTextView.setBackground(background);
+    }
+
     private void displayImageFor3Secs(ImageView inputImageView, int resourceId, float horizontalSkew){
-        if(level==1) {
+        if (level == 1) {
+            int scriptCounterPlaceholder = scriptCounter;
             ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) inputImageView.getLayoutParams();
-            params.horizontalBias = horizontalSkew; // here is one modification for example. modify anything else you want :)
+            params.horizontalBias = horizontalSkew;
             inputImageView.setLayoutParams(params);
+            inputImageView.setImageResource(resourceId); //set image
+            inputImageView.setClipToOutline(true);
             inputImageView.setVisibility(View.VISIBLE);
-            findViewById(R.id.changingImageView).postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    inputImageView.setVisibility(View.INVISIBLE);
-                    inputImageView.setImageResource(resourceId); //set image
-                    //inputImageView.margin(left, top, right, bottom);
-                }
-            }, 3000);
+            imageBeingPoppedupFlag = true;
+            if (scriptCounterPlaceholder == scriptCounter) {
+                //if(imageBeingPoppedupFlag == false) {
+                //    findViewById(R.id.changingImageView).postDelayed(new Runnable() {
+                //        public void run() {
+                            //inputImageView.setVisibility(View.INVISIBLE);
+                //            imageBeingPoppedupFlag = false;
+                //        }
+                //    }, 3000);
+                //}
+            }
         }
     }
 
@@ -719,7 +807,7 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
             scriptCounter = 33;
         }
         if (progressIncrementor == 5) {
-            scriptCounter = 43;
+            scriptCounter = 42;
         }
         scriptCounterLast = scriptCounter - 1;
     }

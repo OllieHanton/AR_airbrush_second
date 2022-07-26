@@ -54,7 +54,7 @@
     <string name="script_27">Spray with compressor at 45 psi or 4 bar.</string>
     <string name="script_28">As before, use the distance gauge to position your airbrush approximately 30cm perpendicular to the substrate.</string>
     <string name="script_29">Fill in the same space as the previous layer.</string>
-    <string name="tip_script_29">Be careful not to cover attachment points</string>
+    <string name="tip_script_29">Tip: Be careful not to cover attachment points</string>
     <string name="script_30">When you have finished spraying, return the unused paint to the bottle.</string>
                 <!--UVlight off-->
     <string name="script_31">Now wait at least 15 minutes for paint to dry. Use this time to clean out your airbrush.</string>
@@ -85,7 +85,7 @@
                 <!--highlight both connection points in AR with red and green circles.-->
     <string name="script_45">There must be no resistance otherwise you have a short circuit and the cell will not light up.</string>
     <string name="script_46">Attach your electrodes to the connection points with crocodile clips or copper tape. Make sure that the metals are in contact to ensure a strong electrical connection.</string>
-    <string name="tip_script_46">Use a dab of copper paint if necessary to reinforce the connection and let this dry.</string>
+    <string name="tip_script_46">Tip: Use a dab of copper paint if necessary to reinforce the connection and let this dry.</string>
     <string name="script_47">Test your circuit by applying power. We will now take you through our testing framework:</string>
     <string name="script_48">If your cell does not light up you may well have a break in the transparent top electrode. Use the slider at the bottom of the screen to return to phase 4 and redo this step. If it continues not to work you may need to restart the whole process. </string>
     <string name="script_49">If your cell partially lights with a hard edge on where it lights up then you likely have insufficiently sprayed electrodes. If the lit up part is in contact with the base electrode then you may have to restart. If the lit up part is in contact with the top electrode then use the slider below to return to phase 4 and redo this step. </string>
