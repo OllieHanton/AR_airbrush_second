@@ -64,11 +64,10 @@ Indicates that this app requires Google Play Services for AR.
         <activity
             android:name=".ARviewActivity"
             android:screenOrientation="userLandscape" />
-
-        <service android:name=".bluetooth.SerialService" />
         <activity
             android:name=".DesignChoiceActivity"
             android:screenOrientation="userLandscape" />
+        <service android:name=".bluetooth.SerialService" />
     </application>
 
 </manifest>

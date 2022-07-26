@@ -21,30 +21,33 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.example.ar_airbrush_second.ARviewActivity;
+import com.example.ar_airbrush_second.MainActivity;
 import com.example.ar_airbrush_second.R;
 
 import java.nio.charset.StandardCharsets;
 
-public class TerminalFragment extends Fragment implements ServiceConnection, SerialListener {
+public class CommsFragment extends Fragment implements ServiceConnection, SerialListener {
 
     public enum Connected {False, Pending, True}
 
     private String deviceAddress;
     private SerialService service;
-    private TextView receiveText;
     public Connected connected = Connected.False;
     public boolean initialStart = true;
+
+    Toast toastMessage;
 
     // Lifecycle
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(false);
         setRetainInstance(true);
         deviceAddress = getArguments().getString("device");
     }
@@ -91,16 +94,6 @@ public class TerminalFragment extends Fragment implements ServiceConnection, Ser
         service = null;
     }
 
-    // UI
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_terminal, container, false);
-        receiveText = view.findViewById(R.id.terminal);                          // TextView performance decreases with number of spans
-        receiveText.setTextColor(getResources().getColor(R.color.colorReceiveText)); // set as default color to reduce number of spans
-        receiveText.setMovementMethod(ScrollingMovementMethod.getInstance());
-        return view;
-    }
-
     // Serial + UI
     private void connect() {
         try {
@@ -121,27 +114,18 @@ public class TerminalFragment extends Fragment implements ServiceConnection, Ser
     }
 
     private void status(String str) {
-        SpannableStringBuilder spn = new SpannableStringBuilder(str + '\n');
-        spn.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.colorStatusText)), 0, spn.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        receiveText.append(spn);
+        toastMessage = Toast.makeText(getActivity(), str, Toast.LENGTH_SHORT);
+        toastMessage.show();
     }
 
     public String btMessage;
 
-    public Handler handler;
-
     public void receive(byte[] data) {
         btMessage = new String(data, StandardCharsets.UTF_8);
-        Log.d("MESSAGE RECEIVED", btMessage);
-        // TODO Use handler to pass btMessage
-//        handler.obtainMessage(btMessage).sendToTarget();
-    }
-
-    public static int byteArrayToInt(byte[] b) {
-        return b[3] & 0xFF |
-                (b[2] & 0xFF) << 8 |
-                (b[1] & 0xFF) << 16 |
-                (b[0] & 0xFF) << 24;
+        SharedPreferences preferences = service.getApplicationContext().getSharedPreferences("settings", android.content.Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putString("btMessage", btMessage);
+        editor.commit();
     }
 
     // SerialListener
@@ -149,6 +133,7 @@ public class TerminalFragment extends Fragment implements ServiceConnection, Ser
     public void onSerialConnect() {
         status("connected");
         connected = Connected.True;
+        startActivity(new Intent(getActivity(), MainActivity.class));
     }
 
     @Override
