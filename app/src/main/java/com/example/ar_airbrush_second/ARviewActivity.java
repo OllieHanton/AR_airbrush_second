@@ -1,8 +1,10 @@
 package com.example.ar_airbrush_second;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
+import androidx.core.graphics.drawable.DrawableCompat;
 
 import android.app.Activity;
 import android.app.ActivityManager;
@@ -12,6 +14,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ShapeDrawable;
@@ -47,9 +50,12 @@ import com.google.ar.core.Frame;
 import com.google.ar.core.Session;
 import com.google.ar.sceneform.AnchorNode;
 import com.google.ar.sceneform.ArSceneView;
+import com.google.ar.sceneform.Camera;
 import com.google.ar.sceneform.FrameTime;
+import com.google.ar.sceneform.HitTestResult;
 import com.google.ar.sceneform.Node;
 import com.google.ar.sceneform.Scene;
+import com.google.ar.sceneform.collision.Ray;
 import com.google.ar.sceneform.math.Quaternion;
 import com.google.ar.sceneform.math.Vector3;
 import com.google.ar.sceneform.rendering.Light;
@@ -88,9 +94,6 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
     private ModelRenderable foxRenderable;
     private ModelRenderable modelRenderable;
 
-    //Design chosen from design library flag
-    private int designChosen = 1;
-
     //Design mode (0) or create mode (1) toggled flag
     private int toggleMode = 0;
 
@@ -114,6 +117,11 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
     private Node nodeForLine;
     public boolean objectFlag = false;
 
+    public Vector3 anchorNodePositionx = new Vector3(0,0,0);
+    public Vector3 anchorNodePositionz = new Vector3(0,0,0);
+
+    Pose objectCenter = null; // objectpose updated for translations (to update currently null).
+
     public boolean imageBeingPoppedupFlag = false;
 
     Toast toastMessage;
@@ -122,11 +130,41 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
     public int level=1;
     public boolean uv;
     public boolean laser;
+    public boolean positionWarnings = true;
+    public boolean virtualPaint = false;
+    public boolean sprayBounds = false;
+    public boolean cost = true;
+    public boolean distance = true;
 
     public boolean triggerPress = false;
 
+    //Design chosen from design library flag
+    //1 = Dispray logo
+    //2 = WC
+    //3 = indicator
+    //4 = bell
+    private int designChosen = 1;
+
     //hardcoded cost:
-    private double design1cost = 3.00;
+    //designs: Object thickness: 3mm
+    //
+    //logo_design: 20366.0832 mm^3
+    //logo_electrodes: 8604.9122 mm^3
+    //
+    //wc_design: 5382.8429 mm^3
+    //wc_electrodes: 14352.4028 mm^3
+    //
+    //indicator_design: 18906.1919 mm^3
+    //indicator_electrodes: 21679.8142 mm^3
+    //
+    //bell_design: 8223.0246 mm^3
+    //bell_electrodes: 8208.1725 mm^3
+
+    public double costPencePerMMSquared = 0.0005;
+    private double design1area = (20366.08+8604.91)/3;
+    private double design2area = (5582.84+14352.40)/3;
+    private double design3area = (18906.19+21679.81)/3;
+    private double design4area = (8223.02+8208.17)/3;
 
     @Override
     @SuppressWarnings({"AndroidApiChecker", "FutureReturnValueIgnored"})
@@ -763,12 +801,17 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
         uvControl();
     }
 
-    private void setTextBoxColour(int colour){
+    private void setTextBoxColour(int colour){//}, int thumbColor){
+        SeekBar slider = findViewById(R.id.createmode_seekbar);
+
         TextView topTextInstructions = findViewById(R.id.createmode_top_text_instructions);
         TextView tipTextView = findViewById(R.id.createmode_tips);
         Drawable background = ContextCompat.getDrawable(ARviewActivity.this, colour);
         topTextInstructions.setBackground(background);
         //tipTextView.setBackground(background);
+
+        slider.setThumbTintList(ColorStateList.valueOf(getResources().getColor(R.color.turquoise)));
+       // slider.setThumb
     }
 
     private void displayImageFor3Secs(ImageView inputImageView, int resourceId, float horizontalSkew){
@@ -917,46 +960,186 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
 
     @Override
     public void onUpdate(FrameTime frameTime) {
+
+        distanceCalculatingAndDisplaying();
+        costCalculatingAndDisplaying();
+        virtualPaintARImplementation();
+        positionAndAngleWarning();
+        warningForOutsideSprayBounds();
+
+    }
+
+    //function to calculate distance from object and display it in specific textview
+    public void distanceCalculatingAndDisplaying(){
         Frame frame = arCam.getArSceneView().getArFrame();
+        if(distance==true && toggleMode==1) {
+            substrateDistance.setVisibility(View.VISIBLE);
+            //logic to calculate distance from camera to object
+            if (anchorNode != null) {
+                Pose objectPose = mainanchor.getPose();
+                Pose cameraPose = frame.getCamera().getPose();
+                float dx = objectPose.tx() - cameraPose.tx();
+                float dy = objectPose.ty() - cameraPose.ty();
+                float dz = objectPose.tz() - cameraPose.tz();
 
-        //logic to calculate distance from camera to object
-        if (anchorNode != null) {
-            Pose objectPose = mainanchor.getPose();
-            Pose cameraPose = frame.getCamera().getPose();
-            float dx = objectPose.tx() - cameraPose.tx();
-            float dy = objectPose.ty() - cameraPose.ty();
-            float dz = objectPose.tz() - cameraPose.tz();
+                ///Compute the straight-line distance. Round value to 2dp in the process:
+                float distanceMeters = (float) Math.sqrt(dx * dx + dy * dy + dz * dz);
+                distanceMeters = distanceMeters * 100;
+                distanceMeters = Math.round(distanceMeters);
+                int intDistanceMeters = (int) distanceMeters;
+                //update text view with distance as phone moves - subtract length of the airbrush for distance from nozzle to object...
+                substrateDistance.setText(intDistanceMeters + "cm");
+            }
+        }
+        else if(toggleMode==0){
+            substrateDistance.setVisibility(View.INVISIBLE);
+        }
 
-            ///Compute the straight-line distance. Round value to 2dp in the process:
-            float distanceMeters = (float) Math.sqrt(dx * dx + dy * dy + dz * dz);
-            distanceMeters = distanceMeters * 100;
-            distanceMeters = Math.round(distanceMeters);
-            int intDistanceMeters = (int) distanceMeters;
-            //update text view with distance as phone moves - subtract length of the airbrush for distance from nozzle to object...
-            substrateDistance.setText(intDistanceMeters + "cm");
+    }
 
+    //function to calculate cost
+    public void costCalculatingAndDisplaying(){
+        if(cost==true && toggleMode==0) {
+            costEvaluator.setVisibility(View.VISIBLE);
             //calculate cost, round value to 2dp in the process:
             float scale = model.getWorldScale().x;
-            double cost = design1cost * scale;
-            cost = cost * 100;
-            cost = Math.round(cost);
-            cost = cost / 100;
-            costEvaluator.setText("£" + cost);
+            double designArea = design1area;
+            if (designChosen == 4) {
+                designArea = design4area;
+            } else if (designChosen == 3) {
+                designArea = design3area;
+            } else if (designChosen == 2) {
+                designArea = design2area;
+            }
+            double costi = design1area * costPencePerMMSquared * scale;
+            costi = costi * 100;
+            costi = Math.round(costi);
+            costi = costi / 100;
+            costEvaluator.setText("£" + costi);
+        }
+        else if(toggleMode==1){
+            costEvaluator.setVisibility(View.INVISIBLE);
+        }
+    }
 
-            //Handle trigger press and warning that you might be too far away...:
-            if (triggerPress == true) {
-                if (distanceMeters > 45) {
-                    //return error message that airbrush might be too far away from substrate.
-                    /*if (toastMessage!= null) {
-                        toastMessage.cancel();
-                    }*/
-                    toastMessage = Toast.makeText(ARviewActivity.this, distanceMeters + "Warning: spraying occuring greater than optimal distance from substrate", Toast.LENGTH_LONG);
-                    toastMessage.show();
-                } else {
-                    //functionality to add feedback for where the user has sprayed... - add circles and find intersection...
+    //////////////function to show angle of spray and warn if wrong angle
+    //positionWarnings - global variable stored in settings
+    //check x,y,z angles and if greater than say 30 degrees feed a warning back to user
+    public void positionAndAngleWarning() {
+        Frame frame = arCam.getArSceneView().getArFrame();
+        TextView warningTextBox = findViewById(R.id.warningtextbox);
+        int bothWarnings=0;
+        if(positionWarnings) {
+            if (true){//scriptCounter == 1) { //update here
+
+                //logic to calculate distance from camera to object
+                if (anchorNode != null) {
+                    Pose objectPose = mainanchor.getPose();
+                    Pose cameraPose = frame.getCamera().getPose();
+                    float dx = objectPose.tx() - cameraPose.tx();
+                    float dy = objectPose.ty() - cameraPose.ty();
+                    float dz = objectPose.tz() - cameraPose.tz();
+                    ///Compute the straight-line distance. Round value to 2dp in the process:
+                    float distanceMeters = (float) Math.sqrt(dx * dx + dy * dy + dz * dz);
+                    distanceMeters = distanceMeters * 100;
+                    distanceMeters = Math.round(distanceMeters);
+                    //Handle trigger press and warning that you might be too far away...:
+                        if (triggerPress) {
+                            if (distanceMeters > 45) {
+                                warningTextBox.setText("Warning: spraying occuring greater than optimal distance from substrate");
+                                warningTextBox.setVisibility(View.VISIBLE);
+                                bothWarnings++;
+                            }
+                        }
+                }
+                //logic to calculate angle warning
+                if (anchorNode != null) {
+                    double xangleFromVertical = 0;
+                    double yangleFromVertical = 0;
+                    Camera arCamera = arCam.getArSceneView().getScene().getCamera();
+                    Ray ray = new Ray(arCamera.getWorldPosition(),arCamera.getForward());
+
+                    if (triggerPress) {
+                        if (xangleFromVertical >45 || yangleFromVertical >45) {
+                            //implement warning bar: "Warning: spraying occuring greater than optimal distance from substrate"
+                            if (positionWarnings) {
+                                warningTextBox.setVisibility(View.VISIBLE);
+                                warningTextBox.setText("Warning: angle of airbrush not perpendicular to surface");
+                                bothWarnings++;
+                            }
+                        }
+                    }
+                }
+                if(bothWarnings==2){
+                    warningTextBox.setVisibility(View.VISIBLE);
+                    warningTextBox.setText("Warning: airbrush not perpendicular to surface and distance is greater than optimal for spraying");
                 }
             }
         }
+    }
+
+
+
+    ///////////function for circles appearing but make it toggleable... and make it when you press the trigger
+    //virtualPaint - global variable stored in settings
+    public void virtualPaintARImplementation(){
+        Frame frame = arCam.getArSceneView().getArFrame();
+        if (anchorNode != null) {
+            Pose objectPose = mainanchor.getPose(); //object post for if we aren't moving the object around.
+            Pose cameraPose = frame.getCamera().getPose();
+
+            float x = cameraPose.tx();
+            float y = cameraPose.ty();
+            float z = cameraPose.tz();
+
+            // get the camera
+            Camera arCamera = arCam.getArSceneView().getScene().getCamera();
+
+            Ray ray = new Ray(arCamera.getWorldPosition(),arCamera.getForward());
+            HitTestResult result = arCam.getArSceneView().getScene().hitTest(ray);
+            Node nonTransformableModel = (Node)model;
+            if (result.getNode()==nonTransformableModel) {
+
+                float intersectionx = result.getPoint().x;
+                float intersectiony = result.getPoint().y;
+                float intersectionz = result.getPoint().z;
+                //substrateDistance.setText("Intersect x: " + intersectionx + "Intersect y: " + intersectiony + "Intersect z: " + intersectionz);
+
+                com.google.ar.sceneform.rendering.Color newColor = new com.google.ar.sceneform.rendering.Color(0, 0.2f, 0.8f, 0.1f); //a=0 is transparent, a=1 is opaque
+                //newColor.set(0, 0.2f, 1, 0.1f);
+                MaterialFactory.makeOpaqueWithColor(getApplicationContext(), newColor)
+                        .thenAccept(
+                                material -> {
+                                    // Then, create a rectangular prism, using ShapeFactory.makeCube() and use the difference vector to extend to the necessary length.
+                                    //Log.d(TAG,"drawLine insie .thenAccept");
+                                    ModelRenderable model = ShapeFactory.makeCylinder(
+                                            //new Vector3(0.01f, 0.01f, 0.01f),
+                                            0.1f, 0.01f,
+                                            new Vector3(intersectionx, 0, intersectionz-0.1f), material);
+
+                                    //Last, set the world rotation of the node to the rotation calculated earlier and set the world position to the midpoint between the given points.
+                                    Anchor lineAnchor = anchorNode.getAnchor(); //changed to have anchor of node1...
+                                    nodeForLine = new Node();
+                                    nodeForLine.setParent(anchorNode);
+                                    nodeForLine.setRenderable(model);
+                                    nodeForLine.setWorldPosition(anchorNode.getWorldPosition());
+                                    //nodeForLine.setWorldRotation(rotationFromAToB);
+                                }
+                        );
+                //substrateDistance.setText("anchor x: " + anchorNode.getWorldPosition().x + " anchor y: " + anchorNode.getWorldPosition().y + " anchor z: " + anchorNode.getWorldPosition().z);
+            }
+            //result.reset();
+
+            //}
+        }
+    }
+
+
+    //////////////function to show if not pointed at actual object!! (basically initialise object thickness and update if larger and then if smaller by more than a certain threshold its likely not pointing at the object....)
+    //sprayBounds - global variable stored in settings
+    //using intersectionx intersectiony and intersectionz
+    public void warningForOutsideSprayBounds(){
+        //content
     }
 
     //region Timer

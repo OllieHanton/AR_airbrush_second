@@ -76,6 +76,7 @@
         android:visibility="invisible"
         android:progressDrawable="@drawable/seekbar_colour"
         android:splitTrack="false"
+        android:thumb="@drawable/seekerbar_thumb"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/createmode_forward"
         app:layout_constraintStart_toEndOf="@+id/createmode_back" />
@@ -140,6 +141,22 @@
         android:visibility="invisible"
         app:layout_constraintStart_toStartOf="@+id/ar_camera_area"
         app:layout_constraintTop_toBottomOf="@+id/createmode_text_distance_to_substrate" />
+
+    <TextView
+        android:id="@+id/warningtextbox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|bottom"
+        android:layout_marginBottom="24dp"
+        android:background="@color/warningred"
+        android:breakStrategy="simple"
+        android:gravity="center_horizontal"
+        android:padding="4dip"
+        android:text="Warning: this is the warning bar"
+        android:visibility="invisible"
+        android:textColor="#FFFFFF"
+        android:textSize="14dp"
+        app:layout_constraintBottom_toTopOf="@+id/createmode_seekbar"/>
 
     <ImageButton
         android:id="@+id/settings_drop_down_menu"
