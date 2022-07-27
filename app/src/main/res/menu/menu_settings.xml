@@ -21,8 +21,8 @@
     </item>
 
     <item
-        android:id="@+id/settings_modules"
-        android:title="@string/modules">
+        android:id="@+id/settings_hardware_modules"
+        android:title="@string/hardware_modules">
         <menu>
             <item
                 android:id="@+id/settings_uv"
@@ -32,6 +32,33 @@
                 android:id="@+id/settings_laser"
                 android:checkable="true"
                 android:title="@string/laser_guidance" />
+        </menu>
+    </item>
+
+    <item
+        android:id="@+id/settings_ar_modules"
+        android:title="@string/ar_modules">
+        <menu>
+            <item
+                android:id="@+id/settings_warning"
+                android:checkable="true"
+                android:title="@string/warning" />
+            <item
+                android:id="@+id/settings_paint"
+                android:checkable="true"
+                android:title="@string/paint" />
+            <item
+                android:id="@+id/settings_bounds"
+                android:checkable="true"
+                android:title="@string/bounds" />
+            <item
+                android:id="@+id/settings_dist"
+                android:checkable="true"
+                android:title="@string/dist" />
+            <item
+                android:id="@+id/settings_cost"
+                android:checkable="true"
+                android:title="@string/cost" />
         </menu>
     </item>
 </menu>

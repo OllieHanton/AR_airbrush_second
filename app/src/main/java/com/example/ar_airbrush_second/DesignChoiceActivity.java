@@ -1,31 +1,17 @@
 package com.example.ar_airbrush_second;
 
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentManager;
 
 import android.app.Activity;
-import android.app.ActivityManager;
-import android.app.AlertDialog;
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.Intent;
-import android.content.ServiceConnection;
 import android.content.SharedPreferences;
-import android.graphics.Color;
-import android.os.Build;
-import android.os.Bundle;
-import android.os.IBinder;
-import android.text.Editable;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.SeekBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
 public class DesignChoiceActivity extends AppCompatActivity implements FragmentManager.OnBackStackChangedListener {
@@ -55,6 +41,11 @@ public class DesignChoiceActivity extends AppCompatActivity implements FragmentM
                 }
                 toastMessage=Toast.makeText(DesignChoiceActivity.this, "Design 1 chosen", Toast.LENGTH_SHORT);
                 toastMessage.show();
+                Drawable highlight = getResources().getDrawable( R.drawable.highlight);
+                img1.setBackground(highlight);
+                img2.setBackground(null);
+                img3.setBackground(null);
+                img4.setBackground(null);
                 sharedPref = getSharedPreferences("settings", Activity.MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPref.edit();
                 editor.putInt("designChoice", 1);
@@ -68,6 +59,11 @@ public class DesignChoiceActivity extends AppCompatActivity implements FragmentM
                 }
                 toastMessage=Toast.makeText(DesignChoiceActivity.this, "Design 2 chosen", Toast.LENGTH_SHORT);
                 toastMessage.show();
+                Drawable highlight = getResources().getDrawable( R.drawable.highlight);
+                img2.setBackground(highlight);
+                img1.setBackground(null);
+                img3.setBackground(null);
+                img4.setBackground(null);
                 sharedPref = getSharedPreferences("settings", Activity.MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPref.edit();
                 editor.putInt("designChoice", 1);
@@ -81,6 +77,11 @@ public class DesignChoiceActivity extends AppCompatActivity implements FragmentM
                 }
                 toastMessage=Toast.makeText(DesignChoiceActivity.this, "Design 3 chosen", Toast.LENGTH_SHORT);
                 toastMessage.show();
+                Drawable highlight = getResources().getDrawable( R.drawable.highlight);
+                img3.setBackground(highlight);
+                img1.setBackground(null);
+                img2.setBackground(null);
+                img4.setBackground(null);
                 sharedPref = getSharedPreferences("settings", Activity.MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPref.edit();
                 editor.putInt("designChoice", 2);
@@ -94,6 +95,11 @@ public class DesignChoiceActivity extends AppCompatActivity implements FragmentM
                 }
                 toastMessage=Toast.makeText(DesignChoiceActivity.this, "Design 4 chosen", Toast.LENGTH_SHORT);
                 toastMessage.show();
+                Drawable highlight = getResources().getDrawable( R.drawable.highlight);
+                img4.setBackground(highlight);
+                img1.setBackground(null);
+                img2.setBackground(null);
+                img3.setBackground(null);
                 sharedPref = getSharedPreferences("settings", Activity.MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPref.edit();
                 editor.putInt("designChoice", 3);

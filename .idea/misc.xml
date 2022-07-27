@@ -4,8 +4,17 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/Coding/Android/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.197" />
+        <entry key="..\:/Coding/Android/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/drawable/bluetextbackground.xml" value="0.2325" />
+        <entry key="..\:/Coding/Android/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/drawable/border.xml" value="0.2315" />
+        <entry key="..\:/Coding/Android/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/drawable/frame.xml" value="0.2325" />
+        <entry key="..\:/Coding/Android/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/drawable/greentextbackground.xml" value="0.2325" />
         <entry key="..\:/Coding/Android/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/drawable/ic_launcher_background.xml" value="0.197" />
         <entry key="..\:/Coding/Android/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/drawable/ic_notification.xml" value="0.1425" />
+        <entry key="..\:/Coding/Android/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/drawable/orangetextbackground.xml" value="0.2325" />
+        <entry key="..\:/Coding/Android/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/drawable/redtextbackground.xml" value="0.2325" />
+        <entry key="..\:/Coding/Android/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/drawable/seekbar_colour.xml" value="0.2325" />
+        <entry key="..\:/Coding/Android/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/drawable/tealtextbackground.xml" value="0.2325" />
+        <entry key="..\:/Coding/Android/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/drawable/yellowtextbackground.xml" value="0.2325" />
         <entry key="..\:/Coding/Android/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/layout/activity_arview.xml" value="0.4" />
         <entry key="..\:/Coding/Android/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/layout/activity_bluetooth.xml" value="0.1515625" />
         <entry key="..\:/Coding/Android/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/layout/activity_btcomms.xml" value="0.1125" />
@@ -31,19 +40,11 @@
         <entry key="..\:/Coding/Android/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/xml/root_preferences.xml" value="0.25226449275362317" />
         <entry key="..\:/Users/oh12660/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.299" />
         <entry key="..\:/Users/oh12660/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/drawable/bg_gradient.xml" value="0.299" />
-        <entry key="..\:/Users/oh12660/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/drawable/bluetextbackground.xml" value="0.2865" />
-        <entry key="..\:/Users/oh12660/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/drawable/frame.xml" value="0.2865" />
         <entry key="..\:/Users/oh12660/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/drawable/gradient.xml" value="0.3715" />
         <entry key="..\:/Users/oh12660/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/drawable/gradientgrey.xml" value="0.3715" />
-        <entry key="..\:/Users/oh12660/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/drawable/gradienttextbackground.xml" value="0.2865" />
-        <entry key="..\:/Users/oh12660/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/drawable/greentextbackground.xml" value="0.2865" />
         <entry key="..\:/Users/oh12660/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/drawable/ic_launcher_background.xml" value="0.299" />
-        <entry key="..\:/Users/oh12660/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/drawable/orangetextbackground.xml" value="0.2865" />
-        <entry key="..\:/Users/oh12660/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/drawable/redtextbackground.xml" value="0.2865" />
-        <entry key="..\:/Users/oh12660/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/drawable/seekbar_colour.xml" value="0.2865" />
         <entry key="..\:/Users/oh12660/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/drawable/splash_background.xml" value="0.299" />
         <entry key="..\:/Users/oh12660/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/drawable/splashbackground.xml" value="0.24" />
-        <entry key="..\:/Users/oh12660/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/drawable/yellowtextbackground.xml" value="0.2865" />
         <entry key="..\:/Users/oh12660/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/layout/activity_arview.xml" value="0.22401847575057737" />
         <entry key="..\:/Users/oh12660/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/layout/activity_designchoice.xml" value="0.37083333333333335" />
         <entry key="..\:/Users/oh12660/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/layout/activity_main.xml" value="0.1703125" />
