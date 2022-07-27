@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">DiSpray</string>
+    <string name="app_name">Dispray</string>
     <string name="bluetooth_settings">Device Bluetooth Settings</string>
     <string name="submit">Submit</string>
     <string name="settings">Settings</string>
@@ -9,5 +9,11 @@
     <string name="beginner">Beginner</string>
     <string name="intermediate">Intermediate</string>
     <string name="advanced">Advanced</string>
-    <string name="modules">Modules</string>
+    <string name="hardware_modules">Hardware Modules</string>
+    <string name="ar_modules">AR Modules</string>
+    <string name="warning">Position Warnings</string>
+    <string name="paint">Virtual Paint</string>
+    <string name="bounds">Spray Bounds</string>
+    <string name="dist">Distance Indicator</string>
+    <string name="cost">Cost Indicator</string>
 </resources>

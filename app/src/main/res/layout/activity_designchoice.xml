@@ -110,14 +110,16 @@
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
-                android:src="@drawable/temp_application_genders" />
+                android:padding="17dp"
+                android:src="@drawable/logo" />
 
             <ImageView
                 android:id="@+id/imageView2"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
-                android:src="@drawable/temp_application_house" />
+                android:padding="17dp"
+                android:src="@drawable/wc" />
         </LinearLayout>
         <LinearLayout
             android:layout_height="360dp"
@@ -128,14 +130,16 @@
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
-                android:src="@drawable/temp_application_exit" />
+                android:padding="17dp"
+                android:src="@drawable/indicator" />
 
             <ImageView
                 android:id="@+id/imageView4"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
-                android:src="@drawable/temp_application_house" />
+                android:padding="17dp"
+                android:src="@drawable/bell" />
         </LinearLayout>
         <!--<ImageView
             android:id="@+id/imageView1"

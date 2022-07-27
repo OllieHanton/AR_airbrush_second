@@ -103,7 +103,7 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
 
     //slider value - equivalent to spraying phase between 0 and 5
     private int sliderChangedValue;
-    public boolean visualiseLayersOn=false;
+    public boolean visualiseLayersOn = false;
 
     //number to count through script messages from file... between 51
     private int scriptCounter = 0;
@@ -127,7 +127,7 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
     Toast toastMessage;
 
     // Settings values - (User level: 1=novice, 3=expert)
-    public int level=1;
+    public int level = 1;
     public boolean uv;
     public boolean laser;
     public boolean positionWarnings = true;
@@ -225,23 +225,23 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
                     //fixing going back into previous stages...
                     if (scriptCounter == 2) {
                         slider.setProgress(0);
-                        scriptCounter=2;
+                        scriptCounter = 2;
                     }
                     if (scriptCounter == 13) {
                         slider.setProgress(1);
-                        scriptCounter=13;
+                        scriptCounter = 13;
                     }
                     if (scriptCounter == 22) {
                         slider.setProgress(2);
-                        scriptCounter=22;
+                        scriptCounter = 22;
                     }
                     if (scriptCounter == 32) {
                         slider.setProgress(3);
-                        scriptCounter=32;
+                        scriptCounter = 32;
                     }
                     if (scriptCounter == 41) {
                         slider.setProgress(4);
-                        scriptCounter=41;
+                        scriptCounter = 41;
                     }
                     implementScript();
                 }
@@ -342,9 +342,9 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
                     toastMessage.show();*/
 
 
-                    if(anchorNode!=null && clickNo>0) {
+                    if (anchorNode != null && clickNo > 0) {
                         drawLine(anchorNode, -0.1f, 0f, -0.1f, 0.1f, 0f, 0.1f);
-                        drawHighlightedCircle(anchorNode, 0.1f, 0.01f,0.1f, 0f, 0.1f, false);
+                        drawHighlightedCircle(anchorNode, 0.1f, 0.01f, 0.1f, 0f, 0.1f, false);
                     }
                 }
             });
@@ -370,11 +370,10 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
             layerViewButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if(visualiseLayersOn==true){
-                        visualiseLayersOn=false;
-                    }
-                    else{
-                        visualiseLayersOn=true;
+                    if (visualiseLayersOn == true) {
+                        visualiseLayersOn = false;
+                    } else {
+                        visualiseLayersOn = true;
                     }
                 }
             });
@@ -435,13 +434,13 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
         Vector3 Point1 = node1.getWorldPosition();
         Vector3 Point2 = node1.getWorldPosition();
 
-        Point1.x=Point1.x+x1;
-        Point1.y=Point1.y+y1;
-        Point1.z=Point1.z+z1;
+        Point1.x = Point1.x + x1;
+        Point1.y = Point1.y + y1;
+        Point1.z = Point1.z + z1;
 
-        Point2.x=Point2.x+x2;
-        Point2.y=Point2.y+y2;
-        Point2.z=Point2.z+z2;
+        Point2.x = Point2.x + x2;
+        Point2.y = Point2.y + y2;
+        Point2.z = Point2.z + z2;
 
         //First, find the vector extending between the two points and define a look rotation
         //in terms of this Vector.
@@ -470,7 +469,7 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
                 );
     }
 
-    private void deleteRenderable(Node inputToDelete){
+    private void deleteRenderable(Node inputToDelete) {
         if (inputToDelete != null) {
             //Log.e(TAG, "removeLine lineToRemove is not mull");
             arCam.getArSceneView().getScene().removeChild(inputToDelete);
@@ -483,9 +482,9 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
     private void drawHighlightedCircle(AnchorNode node1, float radius, float height, float centreadjustx, float centreadjusty, float centreadjustz, boolean green) { //Vector3 adaptedPosition1, Vector3 adaptedPosition2) {
         Vector3 cylinderLocation = node1.getWorldPosition();
 
-        cylinderLocation.x=cylinderLocation.x+centreadjustx;
-        cylinderLocation.y=cylinderLocation.y+centreadjusty;
-        cylinderLocation.z=cylinderLocation.z+centreadjustz;
+        cylinderLocation.x = cylinderLocation.x + centreadjustx;
+        cylinderLocation.y = cylinderLocation.y + centreadjusty;
+        cylinderLocation.z = cylinderLocation.z + centreadjustz;
 
         //First, find the vector extending between the two points and define a look rotation
         //in terms of this Vector.
@@ -493,10 +492,9 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
         //final Vector3 directionFromTopToBottom = difference.normalized();
         //final Quaternion rotationFromAToB = Quaternion.lookRotation(directionFromTopToBottom, Vector3.up());
         com.google.ar.sceneform.rendering.Color cylinderColor = new com.google.ar.sceneform.rendering.Color(255, 255, 255, 0f);
-        if(green=true){
+        if (green = true) {
             cylinderColor = new com.google.ar.sceneform.rendering.Color(0, 255, 0, 128f);
-        }
-        else{
+        } else {
             cylinderColor = new com.google.ar.sceneform.rendering.Color(255, 0, 0, 128f);
         }
         MaterialFactory.makeOpaqueWithColor(getApplicationContext(), cylinderColor)
@@ -524,6 +522,11 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
         level = getIntSetting("level");
         uv = getBoolSetting("uv");
         laser = getBoolSetting("laser");
+        positionWarnings = getBoolSetting("warning");
+        virtualPaint = getBoolSetting("paint");
+        sprayBounds = getBoolSetting("bounds");
+        distance = getBoolSetting("dist");
+        cost = getBoolSetting("cost");
         Log.d("DEBUG", "Settings Retrieved");
 
         PopupMenu popup = new PopupMenu(this, v);
@@ -543,6 +546,11 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
         }
         menu.findItem(R.id.settings_uv).setChecked(uv);
         menu.findItem(R.id.settings_laser).setChecked(laser);
+        menu.findItem(R.id.settings_warning).setChecked(positionWarnings);
+        menu.findItem(R.id.settings_paint).setChecked(virtualPaint);
+        menu.findItem(R.id.settings_bounds).setChecked(sprayBounds);
+        menu.findItem(R.id.settings_dist).setChecked(distance);
+        menu.findItem(R.id.settings_cost).setChecked(cost);
         popup.show();
     }
 
@@ -628,6 +636,151 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
                 });
                 break;
             }
+            case R.id.settings_warning: {
+                // Select to enable automatic UV light during spraying
+                positionWarnings = !item.isChecked();
+                item.setChecked(positionWarnings);
+                saveBoolSetting("warnings", positionWarnings);
+                if (toastMessage != null) {
+                    toastMessage.cancel();
+                }
+                if (positionWarnings) {
+                    toastMessage = Toast.makeText(this, "Position Warnings Enabled", Toast.LENGTH_SHORT);
+                } else {
+                    toastMessage = Toast.makeText(this, "Position Warnings Disabled", Toast.LENGTH_SHORT);
+                }
+                toastMessage.show();
+                item.setShowAsAction(MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
+                item.setActionView(new View(getApplicationContext()));
+                item.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
+                    @Override
+                    public boolean onMenuItemActionExpand(MenuItem item) {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onMenuItemActionCollapse(MenuItem item) {
+                        return false;
+                    }
+                });
+                break;
+            }
+            case R.id.settings_paint: {
+                // Select to enable automatic UV light during spraying
+                virtualPaint = !item.isChecked();
+                item.setChecked(virtualPaint);
+                saveBoolSetting("paint", virtualPaint);
+                if (toastMessage != null) {
+                    toastMessage.cancel();
+                }
+                if (virtualPaint) {
+                    toastMessage = Toast.makeText(this, "Virtual Paint Enabled", Toast.LENGTH_SHORT);
+                } else {
+                    toastMessage = Toast.makeText(this, "Virtual Paint Disabled", Toast.LENGTH_SHORT);
+                }
+                toastMessage.show();
+                item.setShowAsAction(MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
+                item.setActionView(new View(getApplicationContext()));
+                item.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
+                    @Override
+                    public boolean onMenuItemActionExpand(MenuItem item) {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onMenuItemActionCollapse(MenuItem item) {
+                        return false;
+                    }
+                });
+                break;
+            }
+            case R.id.settings_bounds: {
+                // Select to enable automatic UV light during spraying
+                sprayBounds = !item.isChecked();
+                item.setChecked(sprayBounds);
+                saveBoolSetting("bounds", sprayBounds);
+                if (toastMessage != null) {
+                    toastMessage.cancel();
+                }
+                if (sprayBounds) {
+                    toastMessage = Toast.makeText(this, "Spray Bounds Enabled", Toast.LENGTH_SHORT);
+                } else {
+                    toastMessage = Toast.makeText(this, "Spray Bounds Disabled", Toast.LENGTH_SHORT);
+                }
+                toastMessage.show();
+                item.setShowAsAction(MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
+                item.setActionView(new View(getApplicationContext()));
+                item.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
+                    @Override
+                    public boolean onMenuItemActionExpand(MenuItem item) {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onMenuItemActionCollapse(MenuItem item) {
+                        return false;
+                    }
+                });
+                break;
+            }
+            case R.id.settings_dist: {
+                // Select to enable automatic UV light during spraying
+                distance = !item.isChecked();
+                item.setChecked(distance);
+                saveBoolSetting("bounds", distance);
+                if (toastMessage != null) {
+                    toastMessage.cancel();
+                }
+                if (distance) {
+                    toastMessage = Toast.makeText(this, "Distance Indicator Enabled", Toast.LENGTH_SHORT);
+                } else {
+                    toastMessage = Toast.makeText(this, "Distance Indicator Disabled", Toast.LENGTH_SHORT);
+                }
+                toastMessage.show();
+                item.setShowAsAction(MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
+                item.setActionView(new View(getApplicationContext()));
+                item.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
+                    @Override
+                    public boolean onMenuItemActionExpand(MenuItem item) {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onMenuItemActionCollapse(MenuItem item) {
+                        return false;
+                    }
+                });
+                break;
+            }
+            case R.id.settings_cost: {
+                // Select to enable automatic UV light during spraying
+                cost = !item.isChecked();
+                item.setChecked(cost);
+                saveBoolSetting("bounds", cost);
+                if (toastMessage != null) {
+                    toastMessage.cancel();
+                }
+                if (cost) {
+                    toastMessage = Toast.makeText(this, "Cost Indicator Enabled", Toast.LENGTH_SHORT);
+                } else {
+                    toastMessage = Toast.makeText(this, "Cost Indicator Disabled", Toast.LENGTH_SHORT);
+                }
+                toastMessage.show();
+                item.setShowAsAction(MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
+                item.setActionView(new View(getApplicationContext()));
+                item.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
+                    @Override
+                    public boolean onMenuItemActionExpand(MenuItem item) {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onMenuItemActionCollapse(MenuItem item) {
+                        return false;
+                    }
+                });
+                break;
+            }
         }
         return false;
     }
@@ -665,7 +818,7 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
         //clear popup image each time button is pressed...
         changingImageView.setVisibility(View.INVISIBLE);
 
-        if (scriptCounter != 12 && scriptCounter != 21 && scriptCounter != 31 && scriptCounter != 40 && tvTimer != null){
+        if (scriptCounter != 12 && scriptCounter != 21 && scriptCounter != 31 && scriptCounter != 40 && tvTimer != null) {
             timer.cancel();
             tvTimer.setVisibility(View.GONE);
             tvTimer = null;
@@ -764,16 +917,16 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
             setTextBoxColour(R.drawable.greentextbackground);
             displayImageFor3Secs(changingImageView, R.drawable.pedot, 0.68f); //PEDOT image
         }
-        if(scriptCounter == 34) {
-            displayImageFor3Secs(changingImageView, R.drawable.respirator, 0.68f ); //PPE image
+        if (scriptCounter == 34) {
+            displayImageFor3Secs(changingImageView, R.drawable.respirator, 0.68f); //PPE image
         }
-        if(scriptCounter == 36) {
-            displayImageFor3Secs(changingImageView, R.drawable.compressor, 0.68f ); //compressor image
+        if (scriptCounter == 36) {
+            displayImageFor3Secs(changingImageView, R.drawable.compressor, 0.68f); //compressor image
         }
-        if(scriptCounter == 40) {
+        if (scriptCounter == 40) {
             countDownStart();
         }
-        if(scriptCounter == 41) {
+        if (scriptCounter == 41) {
             setTextBoxColour(R.drawable.greentextbackground);
         }
         //////////////////////phase5
@@ -785,14 +938,14 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
             setTextBoxColour(R.drawable.bluetextbackground);
             displayImageFor3Secs(changingImageView, R.drawable.control, 0.80f); //Control image
         }
-        if(scriptCounter == 44) {
-            displayImageFor3Secs(changingImageView, R.drawable.multimeter, 0.80f ); //multimeter image
+        if (scriptCounter == 44) {
+            displayImageFor3Secs(changingImageView, R.drawable.multimeter, 0.80f); //multimeter image
         }
-        if(scriptCounter == 46) {
-            displayImageFor3Secs(changingImageView, R.drawable.electrode_attachment2, 0.80f ); //electrodes image
+        if (scriptCounter == 46) {
+            displayImageFor3Secs(changingImageView, R.drawable.electrode_attachment2, 0.80f); //electrodes image
         }
-        if(scriptCounter == 51) {
-            displayImageFor3Secs(changingImageView, R.drawable.fireworks2, 0.80f ); //fireworks image
+        if (scriptCounter == 51) {
+            displayImageFor3Secs(changingImageView, R.drawable.fireworks2, 0.80f); //fireworks image
             setTextBoxColour(R.drawable.bluetextbackground);
         }
         if (progressIncrementor <= slider.getMax()) {
@@ -801,7 +954,7 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
         uvControl();
     }
 
-    private void setTextBoxColour(int colour){//}, int thumbColor){
+    private void setTextBoxColour(int colour) {//}, int thumbColor){
         SeekBar slider = findViewById(R.id.createmode_seekbar);
 
         TextView topTextInstructions = findViewById(R.id.createmode_top_text_instructions);
@@ -814,28 +967,41 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
        // slider.setThumb
     }
 
-    private void displayImageFor3Secs(ImageView inputImageView, int resourceId, float horizontalSkew){
+    private void displayImageFor3Secs(ImageView inputImageView, int resourceId, float horizontalSkew) {
         if (level == 1) {
-            int scriptCounterPlaceholder = scriptCounter;
-            ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) inputImageView.getLayoutParams();
-            params.horizontalBias = horizontalSkew;
-            inputImageView.setLayoutParams(params);
-            inputImageView.setImageResource(resourceId); //set image
-            inputImageView.setClipToOutline(true);
-            inputImageView.setVisibility(View.VISIBLE);
-            imageBeingPoppedupFlag = true;
-            if (scriptCounterPlaceholder == scriptCounter) {
-                //if(imageBeingPoppedupFlag == false) {
-                //    findViewById(R.id.changingImageView).postDelayed(new Runnable() {
-                //        public void run() {
-                            //inputImageView.setVisibility(View.INVISIBLE);
-                //            imageBeingPoppedupFlag = false;
-                //        }
-                //    }, 3000);
-                //}
+            if (imageBeingPoppedupFlag) {
+                imgTimer.cancel();
+                inputImageView.setVisibility(View.GONE);
+                imageBeingPoppedupFlag = false;
+            }
+            if (!imageBeingPoppedupFlag) {
+                imageBeingPoppedupFlag = true;
+                ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) inputImageView.getLayoutParams();
+                params.horizontalBias = horizontalSkew;
+                inputImageView.setLayoutParams(params);
+                inputImageView.setImageResource(resourceId); //set image
+                inputImageView.setClipToOutline(true);
+                inputImageView.setVisibility(View.VISIBLE);
+                imgTimer(inputImageView);
             }
         }
     }
+
+    //region Image Timer
+    public CountDownTimer imgTimer;
+
+    private void imgTimer(ImageView inputImageView) {
+        imgTimer = new CountDownTimer(3000, 1000) {
+            public void onTick(long millisUntilFinished) {
+            }
+
+            public void onFinish() {
+                inputImageView.setVisibility(View.GONE);
+                imageBeingPoppedupFlag = false;
+            }
+        }.start();
+    }
+    //endregion
 
     //method to set script number when progress bar is changed (N.B. the other way around is handled within "implementScript()"), use should always be followed by implementscript()
     private void updateScriptCounters() {
@@ -1145,6 +1311,7 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
     //region Timer
     public TextView tvTimer;
     public CountDownTimer timer;
+
     private void countDownStart() {
         if (scriptCounter == 12 || scriptCounter == 21 || scriptCounter == 31 || scriptCounter == 40) {
             tvTimer = findViewById(R.id.timer);
@@ -1154,6 +1321,7 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
                     tvTimer.setTextSize(100);
                     tvTimer.setVisibility(View.VISIBLE);
                 }
+
                 public void onFinish() {
                     tvTimer.setText("Your material should be touch dry.\nPlease proceed to the next stage!");
                     tvTimer.setTextSize(30);
@@ -1250,7 +1418,7 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
         }
     }
 
-    public void triggerControl(){
+    public void triggerControl() {
         if (toggleMode == 1) {
             if (Objects.equals(storedMessage, "pressed")) {
                 triggerPress = true;
