@@ -124,6 +124,12 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
     public Node phosphorNode = new Node();
     public Node PEDOTNode = new Node();
 
+    public Node electrode1Node = new Node();
+    public Node electrode2Node = new Node();
+    public Node electrode3Node = new Node();
+    public Node electrode4Node = new Node();
+    public Node electrode5Node = new Node();
+
     public Vector3 anchorNodePositionx = new Vector3(0,0,0);
     public Vector3 anchorNodePositionz = new Vector3(0,0,0);
 
@@ -212,6 +218,7 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
             slider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                 @Override
                 public void onProgressChanged(SeekBar seekBar, int sliderProgress, boolean fromUser) {
+                    turnOffElectrodeConnections(); //delete electrode animate objects
                     sliderChangedValue = sliderProgress;
                     updateScriptCounters();
                     implementScript();
@@ -515,7 +522,6 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
             return false;
         }
     }
-
 
     //%%%%%%%%%%%%%%%%%%%%%%%
     /*private AnchorNode moveRenderable(AnchorNode markAnchorNodeToMove, Pose newPoseToMoveTo) {
@@ -993,6 +999,15 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
         if (scriptCounter == 17) {
             displayImageFor3Secs(changingImageView, R.drawable.compressor, 0.43f); //Compressor image
         }
+        if (scriptCounter == 18) {
+            turnOffElectrodeConnections();
+        }
+        if (scriptCounter == 19) {
+            highlightElectrodeConnections(1);
+        }
+        if (scriptCounter == 20) {
+            turnOffElectrodeConnections();
+        }
         if (scriptCounter == 21) {
             countDownStart();
         }
@@ -1053,8 +1068,15 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
         if (scriptCounter == 44) {
             displayImageFor3Secs(changingImageView, R.drawable.multimeter, 0.80f); //multimeter image
         }
+        if (scriptCounter == 45) {
+            turnOffElectrodeConnections();
+        }
         if (scriptCounter == 46) {
             displayImageFor3Secs(changingImageView, R.drawable.electrode_attachment2, 0.80f); //electrodes image
+            highlightElectrodeConnections(0);
+        }
+        if (scriptCounter == 47) {
+            turnOffElectrodeConnections();
         }
         if (scriptCounter == 51) {
             displayImageFor3Secs(changingImageView, R.drawable.fireworks2, 0.80f); //fireworks image
@@ -1289,6 +1311,126 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
         //todo
         //do them in green for when we are spraying them
         //do them in red for when you need to not spray over them...
+        com.google.ar.sceneform.rendering.Color chosenElectrodeColour;
+        com.google.ar.sceneform.rendering.Color electrodeHighlightRed = new com.google.ar.sceneform.rendering.Color(0.8f, 0.1f, 0.1f);
+        com.google.ar.sceneform.rendering.Color electrodeHighlightGreen = new com.google.ar.sceneform.rendering.Color(0.1f, 0.8f, 0.1f);
+
+        if(redgreen==1){
+            chosenElectrodeColour=electrodeHighlightRed;
+        }
+        else{
+            chosenElectrodeColour=electrodeHighlightGreen;
+        }
+
+        if(designChosen==1){
+            Vector3 electrode1 = new Vector3(0.12f, 0.001f, -0.01f);
+            Vector3 electrode2 = new Vector3(0.12f, 0.001f, 0.01f);
+            Vector3 electrode3 = new Vector3(-0.08f, 0.001f, 0.04f);
+            createElectrodesNodes(chosenElectrodeColour, electrode1, electrode2, electrode3, electrode3, electrode3);
+        }
+        if(designChosen==2){
+            Vector3 electrode1 = new Vector3(-0.01f, 0.001f, 0.07f);
+            Vector3 electrode2 = new Vector3(0.02f, 0.001f, 0.07f);
+            Vector3 electrode3 = new Vector3(0.04f, 0.001f, 0.07f);
+            createElectrodesNodes(chosenElectrodeColour, electrode1, electrode2, electrode3, electrode3, electrode3);
+        }
+        if(designChosen==3){
+            Vector3 electrode1 = new Vector3(0f, 0.001f, 0.08f);
+            Vector3 electrode2 = new Vector3(0.02f, 0.001f, 0.08f);
+            Vector3 electrode3 = new Vector3(0.04f, 0.001f, 0.08f);
+            Vector3 electrode4 = new Vector3(0.06f, 0.001f, 0.08f);
+            Vector3 electrode5 = new Vector3(0.08f, 0.001f, 0.08f);
+            createElectrodesNodes(chosenElectrodeColour, electrode1, electrode2, electrode3, electrode4, electrode5);
+        }
+        if(designChosen==4){
+            Vector3 electrode1 = new Vector3(0.7f, 0.001f, -0.01f);
+            Vector3 electrode2 = new Vector3(0.7f, 0.001f, 0.01f);
+            createElectrodesNodes(chosenElectrodeColour, electrode1, electrode2, electrode2, electrode2, electrode2);
+        }
+
+
+
+    }
+
+    public void createElectrodesNodes( com.google.ar.sceneform.rendering.Color chosenElectrodeColour, Vector3 electrode1, Vector3 electrode2, Vector3 electrode3, Vector3 electrode4, Vector3 electrode5){
+        MaterialFactory.makeOpaqueWithColor(getApplicationContext(), chosenElectrodeColour)
+                .thenAccept(
+                        material -> {
+                            ModelRenderable cylinderHighlight = ShapeFactory.makeCylinder(0.015f,0.005f,
+                                    electrode1, material);
+
+                            Anchor lineAnchor = anchorNode.getAnchor(); //changed to have anchor of node1...
+                            electrode1Node = new Node();
+                            electrode1Node.setParent(model);
+                            electrode1Node.setRenderable(cylinderHighlight);
+                            //nodeForLine.setWorldPosition(Vector3.add(Point1, Point2).scaled(.5f));
+                            //nodeForLine.setWorldRotation(rotationFromAToB);
+                        }
+                );
+        MaterialFactory.makeOpaqueWithColor(getApplicationContext(), chosenElectrodeColour)
+                .thenAccept(
+                        material -> {
+                            ModelRenderable cylinderHighlight = ShapeFactory.makeCylinder(0.015f,0.005f,
+                                    electrode2, material);
+
+                            Anchor lineAnchor = anchorNode.getAnchor(); //changed to have anchor of node1...
+                            electrode2Node = new Node();
+                            electrode2Node.setParent(model);
+                            electrode2Node.setRenderable(cylinderHighlight);
+                            //nodeForLine.setWorldPosition(Vector3.add(Point1, Point2).scaled(.5f));
+                            //nodeForLine.setWorldRotation(rotationFromAToB);
+                        }
+                );
+        MaterialFactory.makeOpaqueWithColor(getApplicationContext(), chosenElectrodeColour)
+                .thenAccept(
+                        material -> {
+                            ModelRenderable cylinderHighlight = ShapeFactory.makeCylinder(0.015f,0.005f,
+                                    electrode3, material);
+
+                            Anchor lineAnchor = anchorNode.getAnchor(); //changed to have anchor of node1...
+                            electrode3Node = new Node();
+                            electrode3Node.setParent(model);
+                            electrode3Node.setRenderable(cylinderHighlight);
+                            //nodeForLine.setWorldPosition(Vector3.add(Point1, Point2).scaled(.5f));
+                            //nodeForLine.setWorldRotation(rotationFromAToB);
+                        }
+                );
+        MaterialFactory.makeOpaqueWithColor(getApplicationContext(), chosenElectrodeColour)
+                .thenAccept(
+                        material -> {
+                            ModelRenderable cylinderHighlight = ShapeFactory.makeCylinder(0.015f,0.005f,
+                                    electrode4, material);
+
+                            Anchor lineAnchor = anchorNode.getAnchor(); //changed to have anchor of node1...
+                            electrode4Node = new Node();
+                            electrode4Node.setParent(model);
+                            electrode4Node.setRenderable(cylinderHighlight);
+                            //nodeForLine.setWorldPosition(Vector3.add(Point1, Point2).scaled(.5f));
+                            //nodeForLine.setWorldRotation(rotationFromAToB);
+                        }
+                );
+        MaterialFactory.makeOpaqueWithColor(getApplicationContext(), chosenElectrodeColour)
+                .thenAccept(
+                        material -> {
+                            ModelRenderable cylinderHighlight = ShapeFactory.makeCylinder(0.015f,0.005f,
+                                    electrode5, material);
+
+                            Anchor lineAnchor = anchorNode.getAnchor(); //changed to have anchor of node1...
+                            electrode5Node = new Node();
+                            electrode5Node.setParent(model);
+                            electrode5Node.setRenderable(cylinderHighlight);
+                            //nodeForLine.setWorldPosition(Vector3.add(Point1, Point2).scaled(.5f));
+                            //nodeForLine.setWorldRotation(rotationFromAToB);
+                        }
+                );
+    }
+
+    public void turnOffElectrodeConnections(){
+        model.removeChild(electrode1Node);
+        model.removeChild(electrode2Node);
+        model.removeChild(electrode3Node);
+        model.removeChild(electrode4Node);
+        model.removeChild(electrode5Node);
     }
 
     public void clearAllDrawnNodes(){
@@ -1483,7 +1625,7 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
                                         //Anchor lineAnchor = anchorNode.getAnchor(); //changed to have anchor of node1...
                                         nodeForLine = new Node();
                                         nodeForLine.setParent(model);//result.getNode());
-                                        nodeForLine.setWorldPosition(new Vector3(result.getPoint().x, result.getPoint().y+0.05f, result.getPoint().z));//new Vector3(anchorNode.getWorldPosition().x, 0, anchorNode.getWorldPosition().y));
+                                        nodeForLine.setWorldPosition(new Vector3(result.getPoint().x, result.getPoint().y+0.03f, result.getPoint().z));//new Vector3(anchorNode.getWorldPosition().x, 0, anchorNode.getWorldPosition().y));
                                         nodeForLine.setRenderable(modelTemp);
                                         //nodeForLine.setLocalPosition(new Vector3(0f, 0f, 0f));
                                         drawnNodesList.add(nodeForLine);
