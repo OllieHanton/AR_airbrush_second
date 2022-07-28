@@ -184,7 +184,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
         android:text="Delete object"
-        android:visibility="invisible"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/addwiresbutton" />
 
@@ -194,7 +194,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
         android:text="View layers"
-        android:visibility="invisible"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/addwiresbutton" />
 

@@ -18,6 +18,7 @@ import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ShapeDrawable;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 //import android.view.MotionEvent;
@@ -113,12 +114,22 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
     private TextView costEvaluator;
     private AnchorNode anchorNode = null;
     private Anchor mainanchor = null;
+    private Anchor copyOfMainanchor = null;
     private List<AnchorNode> anchorNodeList = new ArrayList<>();
+    private List<Node> drawnNodesList = new ArrayList<>(); //list for all nodes, where model is the parent of all of them!
     private Node nodeForLine;
     public boolean objectFlag = false;
 
+    public Node dielectricNode = new Node();
+    public Node phosphorNode = new Node();
+    public Node PEDOTNode = new Node();
+
     public Vector3 anchorNodePositionx = new Vector3(0,0,0);
     public Vector3 anchorNodePositionz = new Vector3(0,0,0);
+
+    Vector3 objectPosition = null;
+    Vector3 objectScale = null;
+    Quaternion objectRotation = null;
 
     Pose objectCenter = null; // objectpose updated for translations (to update currently null).
 
@@ -128,11 +139,11 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
 
     // Settings values - (User level: 1=novice, 3=expert)
     public int level = 1;
-    public boolean uv;
-    public boolean laser;
+    public boolean uv = true;
+    public boolean laser = true;
     public boolean positionWarnings = true;
-    public boolean virtualPaint = false;
-    public boolean sprayBounds = false;
+    public boolean virtualPaint;// = false;
+    public boolean sprayBounds;// = false;
     public boolean cost = true;
     public boolean distance = true;
 
@@ -165,6 +176,10 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
     private double design2area = (5582.84+14352.40)/3;
     private double design3area = (18906.19+21679.81)/3;
     private double design4area = (8223.02+8208.17)/3;
+
+    public int objectResource = R.raw.logo_tiny;;
+    public int objectWiringResource = R.raw.logo_welectrode_tiny;
+    public boolean wiresToggle = false;
 
     @Override
     @SuppressWarnings({"AndroidApiChecker", "FutureReturnValueIgnored"})
@@ -218,6 +233,8 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
             backButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    //clear drawn nodes and electrode connection pointers
+                    clearAllDrawnNodes();
                     if (scriptCounter > 0) {
                         scriptCounterLast = scriptCounter;
                         scriptCounter--;
@@ -251,6 +268,8 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
             forwardsButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    //clear drawn nodes and electrode connection pointers
+                    clearAllDrawnNodes();
                     /*int progressIncrementor=slider.getProgress();
                     progressIncrementor++;
                     if(progressIncrementor>=0 && progressIncrementor<=slider.getMax()) {
@@ -315,8 +334,8 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
                         sidetiptextbox.setVisibility(View.INVISIBLE);
                         changingImageView.setVisibility(View.INVISIBLE);
                         wiresButton.setVisibility(View.VISIBLE);
-                        deleteButton.setVisibility(View.INVISIBLE);
-                        layerViewButton.setVisibility(View.INVISIBLE);
+                        deleteButton.setVisibility(View.VISIBLE);
+                        layerViewButton.setVisibility(View.VISIBLE);
                         //re-add editable functionality of object here
                         //...
                     }
@@ -335,23 +354,52 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
             wiresButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    /*if (toastMessage != null) {
-                        toastMessage.cancel();
+                    int wireNoWireModel;
+                    if(wiresToggle) {
+                        wireNoWireModel = objectResource;
+                        wiresToggle=false;
                     }
-                    toastMessage = Toast.makeText(ARviewActivity.this, "Wires button", Toast.LENGTH_SHORT);
-                    toastMessage.show();*/
+                    else{
+                        wireNoWireModel = objectWiringResource;
+                        wiresToggle=true;
+                    }
+                    objectPosition = model.getLocalPosition();
+                    objectScale = model.getLocalScale();
+                    objectRotation = model.getLocalRotation();
+
+                    model.getTranslationController();
+
+                    //model.isEnabled = false;
+                    //arCam.getArSceneView().getScene().removeChild(model);
+                    anchorNode.removeChild(model);
+                    ModelRenderable.builder()
+                            //Currently hardcoded text object:
+                            .setSource(ARviewActivity.this, wireNoWireModel)
+                            .setIsFilamentGltf(true)
+                            .build()
+                            .thenAccept(modelRenderable -> readdModel(mainanchor, modelRenderable))
+                            .exceptionally(throwable -> {
+                                AlertDialog.Builder builder = new AlertDialog.Builder(ARviewActivity.this);
+                                builder.setMessage("Something is not right" + throwable.getMessage()).show();
+                                return null;
+                            });
+
+                        //drawLine(anchorNode, -0.1f, 0f, -0.1f, 0.1f, 0f, 0.1f);
+                        //drawHighlightedCircle(anchorNode, 0.1f, 0.01f, 0.1f, 0f, 0.1f, false);
+                    //}
 
 
-                    if (anchorNode != null && clickNo > 0) {
-                        drawLine(anchorNode, -0.1f, 0f, -0.1f, 0.1f, 0f, 0.1f);
-                        drawHighlightedCircle(anchorNode, 0.1f, 0.01f, 0.1f, 0f, 0.1f, false);
-                    }
+
                 }
             });
 
             deleteButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    //mainanchor.detach();
+                    anchorNode.removeChild(model);
+                    clickNo=0;
+
                     /*//Delete the Anchor if it exists
                     //Log.d(TAG, "Deleteing anchor");
                     int currentAnchorIndex;
@@ -370,9 +418,73 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
             layerViewButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if (visualiseLayersOn == true) {
+                    //dielectricNode = new Node();
+                    //phosphorNode = new Node();
+                    //PEDOTNode = new Node();
+                    if (visualiseLayersOn) {
+                        //clearAllDrawnNodes();
+                        model.removeChild(dielectricNode);
+                        model.removeChild(phosphorNode);
+                        model.removeChild(PEDOTNode);
                         visualiseLayersOn = false;
                     } else {
+
+                        Vector3 Point2 = model.getWorldPosition();
+
+                        //First, find the vector extending between the two points and define a look rotation
+                        //in terms of this Vector.
+                        //final Vector3 difference = Vector3.subtract(Point1, Point2);
+                        //final Vector3 directionFromTopToBottom = difference.normalized();
+                        //final Quaternion rotationFromAToB = Quaternion.lookRotation(directionFromTopToBottom, Vector3.up());
+                        com.google.ar.sceneform.rendering.Color orangeDielectric = new com.google.ar.sceneform.rendering.Color(0.91f, 0.5f, 0.07f);//(float)(1-232/255), (float)(1-128/255), (float)(1-18/255));
+                        //com.google.ar.sceneform.rendering.Color orangeDielectric = new com.google.ar.sceneform.rendering.Color(0.99f, 0, 0,0.001f);//(float)(1-232/255), (float)(1-128/255), (float)(1-18/255));
+                        com.google.ar.sceneform.rendering.Color yellowPhosphor = new com.google.ar.sceneform.rendering.Color(0.96f, 0.78f, 0.01f);
+                        com.google.ar.sceneform.rendering.Color greenPEDOT = new com.google.ar.sceneform.rendering.Color(0.30f, 0.91f, 0.30f);
+                        MaterialFactory.makeOpaqueWithColor(getApplicationContext(), orangeDielectric)
+                                .thenAccept(
+                                        material -> {
+                                            ModelRenderable cubeModel = ShapeFactory.makeCube(
+                                                    new Vector3(.08f, .001f, .08f),
+                                                    new Vector3(0f, 0.015f, 0f), material);
+
+                                            Anchor lineAnchor = anchorNode.getAnchor(); //changed to have anchor of node1...
+                                            dielectricNode = new Node();
+                                            dielectricNode.setParent(model);
+                                            dielectricNode.setRenderable(cubeModel);
+                                            //nodeForLine.setWorldPosition(Vector3.add(Point1, Point2).scaled(.5f));
+                                            //nodeForLine.setWorldRotation(rotationFromAToB);
+                                        }
+                                );
+                        MaterialFactory.makeOpaqueWithColor(getApplicationContext(), yellowPhosphor)
+                                .thenAccept(
+                                        material -> {
+                                            ModelRenderable cubeModel = ShapeFactory.makeCube(
+                                                    new Vector3(.08f, .001f, .08f),
+                                                    new Vector3(0f, 0.03f, 0f), material);
+
+                                            Anchor lineAnchor = anchorNode.getAnchor(); //changed to have anchor of node1...
+                                            phosphorNode = new Node();
+                                            phosphorNode.setParent(model);
+                                            phosphorNode.setRenderable(cubeModel);
+                                            //nodeForLine.setWorldPosition(Vector3.add(Point1, Point2).scaled(.5f));
+                                            //nodeForLine.setWorldRotation(rotationFromAToB);
+                                        }
+                                );
+                        MaterialFactory.makeOpaqueWithColor(getApplicationContext(), greenPEDOT)
+                                .thenAccept(
+                                        material -> {
+                                            ModelRenderable cubeModel = ShapeFactory.makeCube(
+                                                    new Vector3(.08f, .001f, .08f),
+                                                    new Vector3(0f, 0.045f, 0f), material);
+
+                                            Anchor lineAnchor = anchorNode.getAnchor(); //changed to have anchor of node1...
+                                            PEDOTNode = new Node();
+                                            PEDOTNode.setParent(model);
+                                            PEDOTNode.setRenderable(cubeModel);
+                                            //nodeForLine.setWorldPosition(Vector3.add(Point1, Point2).scaled(.5f));
+                                            //nodeForLine.setWorldRotation(rotationFromAToB);
+                                        }
+                                );
                         visualiseLayersOn = true;
                     }
                 }
@@ -522,7 +634,7 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
         level = getIntSetting("level");
         uv = getBoolSetting("uv");
         laser = getBoolSetting("laser");
-        positionWarnings = getBoolSetting("warning");
+        positionWarnings = getBoolSetting("warnings");
         virtualPaint = getBoolSetting("paint");
         sprayBounds = getBoolSetting("bounds");
         distance = getBoolSetting("dist");
@@ -666,7 +778,7 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
                 break;
             }
             case R.id.settings_paint: {
-                // Select to enable automatic UV light during spraying
+                // Select to enable virtual paint
                 virtualPaint = !item.isChecked();
                 item.setChecked(virtualPaint);
                 saveBoolSetting("paint", virtualPaint);
@@ -695,7 +807,7 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
                 break;
             }
             case R.id.settings_bounds: {
-                // Select to enable automatic UV light during spraying
+                // Select to enable spray bounds functionality
                 sprayBounds = !item.isChecked();
                 item.setChecked(sprayBounds);
                 saveBoolSetting("bounds", sprayBounds);
@@ -724,10 +836,10 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
                 break;
             }
             case R.id.settings_dist: {
-                // Select to enable automatic UV light during spraying
+                // Select to enable distance function
                 distance = !item.isChecked();
                 item.setChecked(distance);
-                saveBoolSetting("bounds", distance);
+                saveBoolSetting("dist", distance);
                 if (toastMessage != null) {
                     toastMessage.cancel();
                 }
@@ -753,10 +865,10 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
                 break;
             }
             case R.id.settings_cost: {
-                // Select to enable automatic UV light during spraying
+                // Select to enable cost function
                 cost = !item.isChecked();
                 item.setChecked(cost);
-                saveBoolSetting("bounds", cost);
+                saveBoolSetting("cost", cost);
                 if (toastMessage != null) {
                     toastMessage.cancel();
                 }
@@ -1042,6 +1154,25 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
     //default setup - mode where object can be editted
     private void designMode() {
         designChosen = getIntSetting("designChoice");
+        if(designChosen == 1) {
+            objectResource = R.raw.logo_tiny;
+            objectWiringResource = R.raw.logo_welectrode_tiny;
+        }
+        else if(designChosen == 2){
+            objectResource=R.raw.wc_tiny;
+            objectWiringResource=R.raw.wc_welectrode_tiny;
+        }
+        else if(designChosen == 3){
+            objectResource=R.raw.indicator_tiny;
+            objectWiringResource=R.raw.indicator_welectrode_tiny;
+        }
+        else if(designChosen == 4){
+            objectResource=R.raw.bell_tiny;
+            objectWiringResource=R.raw.bell_welectrode_tiny;
+        }
+
+        int finalObjectResource = objectResource;
+
         arCam.setOnTapArPlaneListener((hitResult, plane, motionEvent) -> {
             clickNo++;
             //Add 3d model: the 3d model comes to the scene only when clickNo is one that means once
@@ -1050,7 +1181,7 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
                 mainanchor = hitResult.createAnchor();
                 ModelRenderable.builder()
                         //Currently hardcoded text object:
-                        .setSource(this, R.raw.dispray_texttiny)
+                        .setSource(this, finalObjectResource)
                         .setIsFilamentGltf(true)
                         .build()
                         .thenAccept(modelRenderable -> addModel(mainanchor, modelRenderable))
@@ -1071,6 +1202,13 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
         });
     }
 
+    /*void onRenderableLoaded(Renderable model) {
+        Node modelNode = new Node();
+        modelNode.setRenderable(model);
+        scene.addChild(modelNode);
+        modelNode.setLocalPosition(new Vector3(0, 0, 0));
+    }*/
+
     private void addModel(Anchor mainanchor, ModelRenderable modelRenderable) {
         //modelRenderable.getMaterial().setFloat4("baseColorTint",  0.0f, 0.0f, 0.0f, 1.0f); //this breaks it
         anchorNode = new AnchorNode(mainanchor);
@@ -1081,20 +1219,10 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
         model.getScaleController().setMaxScale(10f);
         model.getScaleController().setMinScale(1f);
 
-        /*ModelRenderable newColorCopyofRenderable = originalRenderable.makeCopy();
-        newColorCopyofRenderable.getMaterial().setFloat3("baseColorTint",
-                new Color(android.graphics.Color.rgb(255,0,0)));
-        yourAnchroNode.setRenderable(newColorCopyofRenderable);*/
 
-
-        //float scalefactor = model.getScaleController().getFinalScale();
-        //model.setLocalScale(exhibit.getModelScale());
         model.setParent(anchorNode);
-        //attaching the anchorNode with the TransformableNode
-        //modelRenderable.getMaterial().setFloat3("baseColorTint", 0, 0, 10);// new Color(android.graphics.Color.rgb(0,0,255)));
 
         com.google.ar.sceneform.rendering.Color newColor = new com.google.ar.sceneform.rendering.Color(0, 0, 255);
-
         model.setLight(Light.builder(Light.Type.POINT).setColor(newColor).build());
 
         //ModelRenderable newColorCopyofRenderable = modelRenderable.makeCopy();
@@ -1103,13 +1231,46 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
 
         model.setRenderable(modelRenderable);
 
+        arCam.getArSceneView().getScene().addOnUpdateListener(this);
+        arCam.getArSceneView().getScene().addChild(anchorNode);
+        //attaching the 3d model with the TransformableNode that is already attached with the node
+        model.select();
+        filamentAsset = model.getRenderableInstance().getFilamentAsset();
+    }
+
+    //method for readding a model when wires button is pressed
+    private void readdModel(Anchor mainanchor, ModelRenderable modelRenderable) {
+        //modelRenderable.getMaterial().setFloat4("baseColorTint",  0.0f, 0.0f, 0.0f, 1.0f); //this breaks it
+        anchorNode = new AnchorNode(mainanchor);
+        // Creating a AnchorNode with a specific anchor
+        anchorNode.setParent(arCam.getArSceneView().getScene());
+        //attaching the anchorNode with the ArFragment
+        model = new TransformableNode(arCam.getTransformationSystem());
+        model.getScaleController().setMaxScale(10f);
+        model.getScaleController().setMinScale(1f);
+
+        model.setLocalPosition(objectPosition);
+        model.setLocalScale(objectScale);
+        model.setLocalRotation(objectRotation);
+
+        model.setParent(anchorNode);
+
+        com.google.ar.sceneform.rendering.Color newColor = new com.google.ar.sceneform.rendering.Color(0, 0, 255);
+        model.setLight(Light.builder(Light.Type.POINT).setColor(newColor).build());
+
+        //ModelRenderable newColorCopyofRenderable = modelRenderable.makeCopy();
+        //newColorCopyofRenderable.getMaterial().setFloat3("baseColorTint", newColor);
+        //model.setRenderable(newColorCopyofRenderable);
+
+
+
+        model.setRenderable(modelRenderable);
 
         arCam.getArSceneView().getScene().addOnUpdateListener(this);
         arCam.getArSceneView().getScene().addChild(anchorNode);
         //attaching the 3d model with the TransformableNode that is already attached with the node
         model.select();
         filamentAsset = model.getRenderableInstance().getFilamentAsset();
-
     }
 
     /*public void changeMaterials () {
@@ -1124,14 +1285,37 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
         }
     }*/
 
+    public void highlightElectrodeConnections(int redgreen){
+        //todo
+        //do them in green for when we are spraying them
+        //do them in red for when you need to not spray over them...
+    }
+
+    public void clearAllDrawnNodes(){
+        //arraylist get length
+        int arrayListLength = drawnNodesList.size();
+        //loop to go through each arraylist element and delete from parent node
+        for (int counter = 0; counter < arrayListLength; counter++) {
+            if(drawnNodesList.get(counter) != null) {
+                anchorNode.removeChild(drawnNodesList.get(counter));
+                model.removeChild(drawnNodesList.get(counter));
+            }
+        }
+        //loop to go through each arraylist element and remove from arraylist
+        /*for (int counter = 0; counter < arrayListLength; counter++) {
+            drawnNodesList.remove(counter);
+        }*/ // this currently crashes the app...
+    }
+
+
     @Override
     public void onUpdate(FrameTime frameTime) {
 
-        distanceCalculatingAndDisplaying();
-        costCalculatingAndDisplaying();
-        virtualPaintARImplementation();
-        positionAndAngleWarning();
-        warningForOutsideSprayBounds();
+        distanceCalculatingAndDisplaying(); //done
+        costCalculatingAndDisplaying(); //done
+        virtualPaintARImplementation(); //to do
+        positionAndAngleWarning(); //done
+        warningForOutsideSprayBounds(); //to do
 
     }
 
@@ -1222,17 +1406,21 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
                 if (anchorNode != null) {
                     double xangleFromVertical = 0;
                     double yangleFromVertical = 0;
+                    double zangleFromVertical = 0;
                     Camera arCamera = arCam.getArSceneView().getScene().getCamera();
                     Ray ray = new Ray(arCamera.getWorldPosition(),arCamera.getForward());
 
+                    //ray.getOrigin();
+                    xangleFromVertical = ray.getDirection().x;
+                    zangleFromVertical = ray.getDirection().z;
+                    //substrateDistance.setText("xdirection: " + ray.getDirection().x + ", ydirection: " + ray.getDirection().y + ", zdirection: " + ray.getDirection().z);
+
                     if (triggerPress) {
-                        if (xangleFromVertical >45 || yangleFromVertical >45) {
+                        if (xangleFromVertical >0.25 || xangleFromVertical <-0.25 || zangleFromVertical >0.25 || zangleFromVertical <-0.25) { //45% threshold
                             //implement warning bar: "Warning: spraying occuring greater than optimal distance from substrate"
-                            if (positionWarnings) {
-                                warningTextBox.setVisibility(View.VISIBLE);
-                                warningTextBox.setText("Warning: angle of airbrush not perpendicular to surface");
-                                bothWarnings++;
-                            }
+                            warningTextBox.setVisibility(View.VISIBLE);
+                            warningTextBox.setText("Warning: angle of airbrush not perpendicular to surface");
+                            bothWarnings++;
                         }
                     }
                 }
@@ -1250,54 +1438,115 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
     //virtualPaint - global variable stored in settings
     public void virtualPaintARImplementation(){
         Frame frame = arCam.getArSceneView().getArFrame();
-        if (anchorNode != null) {
-            Pose objectPose = mainanchor.getPose(); //object post for if we aren't moving the object around.
-            Pose cameraPose = frame.getCamera().getPose();
+        //if button pressed
+        if(virtualPaint){ //virtualPaint
+            if (anchorNode != null) {
+                Pose objectPose = mainanchor.getPose(); //object post for if we aren't moving the object around.
+                Pose cameraPose = frame.getCamera().getPose();
+                Vector3 objectWorldPosition = anchorNode.getWorldPosition(); //..
 
-            float x = cameraPose.tx();
-            float y = cameraPose.ty();
-            float z = cameraPose.tz();
+                //float x = cameraPose.tx();
+                //float y = cameraPose.ty();
+                //float z = cameraPose.tz();
 
-            // get the camera
-            Camera arCamera = arCam.getArSceneView().getScene().getCamera();
+                // get the camera
+                Camera arCamera = arCam.getArSceneView().getScene().getCamera();
 
-            Ray ray = new Ray(arCamera.getWorldPosition(),arCamera.getForward());
-            HitTestResult result = arCam.getArSceneView().getScene().hitTest(ray);
-            Node nonTransformableModel = (Node)model;
-            if (result.getNode()==nonTransformableModel) {
+                Ray ray = new Ray(arCamera.getWorldPosition(),arCamera.getForward());
+                HitTestResult result = arCam.getArSceneView().getScene().hitTest(ray);
 
-                float intersectionx = result.getPoint().x;
-                float intersectiony = result.getPoint().y;
-                float intersectionz = result.getPoint().z;
-                //substrateDistance.setText("Intersect x: " + intersectionx + "Intersect y: " + intersectiony + "Intersect z: " + intersectionz);
+                Node nonTransformableModel = (Node)model;
+                if (result.getNode()==nonTransformableModel) {
 
-                com.google.ar.sceneform.rendering.Color newColor = new com.google.ar.sceneform.rendering.Color(0, 0.2f, 0.8f, 0.1f); //a=0 is transparent, a=1 is opaque
-                //newColor.set(0, 0.2f, 1, 0.1f);
-                MaterialFactory.makeOpaqueWithColor(getApplicationContext(), newColor)
-                        .thenAccept(
-                                material -> {
-                                    // Then, create a rectangular prism, using ShapeFactory.makeCube() and use the difference vector to extend to the necessary length.
-                                    //Log.d(TAG,"drawLine insie .thenAccept");
-                                    ModelRenderable model = ShapeFactory.makeCylinder(
-                                            //new Vector3(0.01f, 0.01f, 0.01f),
-                                            0.1f, 0.01f,
-                                            new Vector3(intersectionx, 0, intersectionz-0.1f), material);
+                    float intersectionx = result.getPoint().x;
+                    float intersectiony = result.getPoint().y;
+                    float intersectionz = result.getPoint().z;
+                    //substrateDistance.setText("Intersect x: " + intersectionx + "Intersect y: " + intersectiony + "Intersect z: " + intersectionz);
 
-                                    //Last, set the world rotation of the node to the rotation calculated earlier and set the world position to the midpoint between the given points.
-                                    Anchor lineAnchor = anchorNode.getAnchor(); //changed to have anchor of node1...
-                                    nodeForLine = new Node();
-                                    nodeForLine.setParent(anchorNode);
-                                    nodeForLine.setRenderable(model);
-                                    nodeForLine.setWorldPosition(anchorNode.getWorldPosition());
-                                    //nodeForLine.setWorldRotation(rotationFromAToB);
-                                }
-                        );
-                //substrateDistance.setText("anchor x: " + anchorNode.getWorldPosition().x + " anchor y: " + anchorNode.getWorldPosition().y + " anchor z: " + anchorNode.getWorldPosition().z);
+                    //objectWorldPosition.x = objectWorldPosition.x + intersectionx;
+                    //objectWorldPosition.y = objectWorldPosition.y + intersectiony;
+                    //objectWorldPosition.z = objectWorldPosition.z + intersectionz;
+
+                    com.google.ar.sceneform.rendering.Color newColor = new com.google.ar.sceneform.rendering.Color(0, 0.2f, 0.8f, 0.1f); //a=0 is transparent, a=1 is opaque
+                    //newColor.set(0, 0.2f, 1, 0.1f);
+                    MaterialFactory.makeOpaqueWithColor(getApplicationContext(), newColor)
+                            .thenAccept(
+                                    material -> {
+                                        // Then, create a rectangular prism, using ShapeFactory.makeCube() and use the difference vector to extend to the necessary length.
+                                        //Log.d(TAG,"drawLine insie .thenAccept");
+                                        ModelRenderable modelTemp = ShapeFactory.makeCylinder(
+                                                //new Vector3(0.01f, 0.01f, 0.01f),
+                                                0.005f, 0.001f,
+                                                Vector3.zero(), material);
+
+                                        //Last, set the world rotation of the node to the rotation calculated earlier and set the world position to the midpoint between the given points.
+                                        //Anchor lineAnchor = anchorNode.getAnchor(); //changed to have anchor of node1...
+                                        nodeForLine = new Node();
+                                        nodeForLine.setParent(model);//result.getNode());
+                                        nodeForLine.setWorldPosition(new Vector3(result.getPoint().x, result.getPoint().y+0.05f, result.getPoint().z));//new Vector3(anchorNode.getWorldPosition().x, 0, anchorNode.getWorldPosition().y));
+                                        nodeForLine.setRenderable(modelTemp);
+                                        //nodeForLine.setLocalPosition(new Vector3(0f, 0f, 0f));
+                                        drawnNodesList.add(nodeForLine);
+
+                                        //nodeForLine.setWorldRotation(rotationFromAToB);
+                                    }
+                            );
+
+                    /*MaterialFactory.makeOpaqueWithColor(this, color)
+                            .thenAccept(material -> {
+                                // The sphere is in local coordinate space, so make the center 0,0,0
+                                Renderable sphere = ShapeFactory.makeSphere(0.05f, Vector3.zero(),
+                                        material);
+
+                                Node indicatorModel = new Node();
+                                indicatorModel.setParent(hitTestResult.getNode());
+                                indicatorModel.setWorldPosition(hitTestResult.getPoint());
+                                indicatorModel.setRenderable(sphere);
+                            });*/
+                    //substrateDistance.setText("anchor x: " + anchorNode.getWorldPosition().x + " anchor y: " + anchorNode.getWorldPosition().y + " anchor z: " + anchorNode.getWorldPosition().z);
+                }
+                //result.reset();
+
+                //}
             }
-            //result.reset();
-
-            //}
         }
+        /*if (anchorNode != null) {
+            Vector3 Point1 = anchorNode.getWorldPosition();
+
+            Point1.x = Point1.x + x1;
+            Point1.y = Point1.y + y1;
+            Point1.z = Point1.z + z1;
+
+            Point2.x = Point2.x + x2;
+            Point2.y = Point2.y + y2;
+            Point2.z = Point2.z + z2;
+
+            //First, find the vector extending between the two points and define a look rotation
+            //in terms of this Vector.
+            final Vector3 difference = Vector3.subtract(Point1, Point2);
+            final Vector3 directionFromTopToBottom = difference.normalized();
+            final Quaternion rotationFromAToB = Quaternion.lookRotation(directionFromTopToBottom, Vector3.up());
+            com.google.ar.sceneform.rendering.Color newColor = new com.google.ar.sceneform.rendering.Color(0, 0, 255);
+            MaterialFactory.makeOpaqueWithColor(getApplicationContext(), newColor)
+                    .thenAccept(
+                            material -> {
+                            // Then, create a rectangular prism, using ShapeFactory.makeCube() and use the difference vector
+                             //      to extend to the necessary length.
+                                //Log.d(TAG,"drawLine insie .thenAccept");
+                                ModelRenderable model = ShapeFactory.makeCube(
+                                        new Vector3(.01f, .01f, difference.length()),
+                                        Vector3.zero(), material);
+                            // Last, set the world rotation of the node to the rotation calculated earlier and set the world position to
+                             //      the midpoint between the given points .
+                                Anchor lineAnchor = node1.getAnchor(); //changed to have anchor of node1...
+                                nodeForLine = new Node();
+                                nodeForLine.setParent(node1);
+                                nodeForLine.setRenderable(model);
+                                nodeForLine.setWorldPosition(Vector3.add(Point1, Point2).scaled(.5f));
+                                nodeForLine.setWorldRotation(rotationFromAToB);
+                            }
+                    );
+        }*/
     }
 
 
@@ -1306,6 +1555,18 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
     //using intersectionx intersectiony and intersectionz
     public void warningForOutsideSprayBounds(){
         //content
+        Camera arCamera = arCam.getArSceneView().getScene().getCamera();
+        Ray ray = new Ray(arCamera.getWorldPosition(),arCamera.getForward());
+        HitTestResult result = arCam.getArSceneView().getScene().hitTest(ray);
+        //if(sprayBounds) {
+            //if(triggerPress) {
+                if (result.getNode() == null) {
+                    //throw warning - need to fix, doesn't currently work
+                    //toastMessage = Toast.makeText(this, "spray not pointed at object warning", Toast.LENGTH_SHORT);
+                    //toastMessage.show();
+                }
+            //}
+        //}
     }
 
     //region Timer

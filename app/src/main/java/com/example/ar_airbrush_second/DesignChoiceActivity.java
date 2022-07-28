@@ -66,7 +66,7 @@ public class DesignChoiceActivity extends AppCompatActivity implements FragmentM
                 img4.setBackground(null);
                 sharedPref = getSharedPreferences("settings", Activity.MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPref.edit();
-                editor.putInt("designChoice", 1);
+                editor.putInt("designChoice", 2);
                 editor.commit();
             }
         });
@@ -84,7 +84,7 @@ public class DesignChoiceActivity extends AppCompatActivity implements FragmentM
                 img4.setBackground(null);
                 sharedPref = getSharedPreferences("settings", Activity.MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPref.edit();
-                editor.putInt("designChoice", 2);
+                editor.putInt("designChoice", 3);
                 editor.commit();
             }
         });
@@ -102,7 +102,7 @@ public class DesignChoiceActivity extends AppCompatActivity implements FragmentM
                 img3.setBackground(null);
                 sharedPref = getSharedPreferences("settings", Activity.MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPref.edit();
-                editor.putInt("designChoice", 3);
+                editor.putInt("designChoice", 4);
                 editor.commit();
             }
         });

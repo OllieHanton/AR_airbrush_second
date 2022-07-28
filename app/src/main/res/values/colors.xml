@@ -39,7 +39,7 @@
     <color name="sblue">#1FC3CD</color>
     <color name="sdarkgrey">#838383</color>
 
-    <!-- seekbar palette2, s for second: https://www.schemecolor.com/kids-rainbow.php-->
+    <!-- seekbar palette2, t for transparent: https://www.schemecolor.com/kids-rainbow.php-->
     <color name="tred">#7FD62226</color>
     <color name="torange">#7FE88012</color>
     <color name="tyellow">#7FF5C603</color>

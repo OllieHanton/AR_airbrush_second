@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="design_mode_welcome">You are in <b>Design Mode</b>! Slowly move camera to initiate augmented reality. When white dots appear, tap to place and edit your design. When you are happy with your design tap the Create mode button in the top left to start fabricating</string>
+    <string name="design_mode_welcome">You are in <b>Design Mode</b>! Pan device left to right to initiate augmented reality. When white dots appear, tap to place and edit your design. When you are happy with your design tap the Create mode button in the top left to start fabricating</string>
 
     <string name="create_mode_welcome">You are now in <b>Create Mode</b>! You will be guided step-by-step through each of four fabrication phases relating to the four different materials that need to be sprayed. You can move between steps using the arrow buttons. The progress bar below allows you to skip between the four phases.</string>
 
     <!--Script-->
-    <string name="script_1">Please make sure that your phone is mounted on the ergonomic airbrush handle and that you have checked within settings that all appropriate modules are implemented within the app.</string>
-    <string name="script_2">You are able to return to the design mode by using the button in the top left. If you do this once you have finished spraying the first layer however, it may cause your device to fail</string>
+    <string name="script_1">Mount phone on ergonomic airbrush handle and check within settings that all appropriate modules are implemented within the app.</string>
+    <string name="script_2">You are able to return to the design mode by using the button in the top left. N.B. If you do this once you have finished spraying the first layer it may cause your device to fail</string>
 
     <!--Spraying layer 1, copper-->
     <string name="script_3">Phase 1: Spraying Conductive Base Electrode (copper).</string>
     <string name="script_4">Put on your PPE (respirator and gloves) and turn on ventilation system.</string>
     <string name="tip_script_4">Tip: Solvents such as toluene in this paint can cause serious health damage.</string>
-    <string name="script_5">Start by loading the copper backplane paint into the airbrush cup. Use a paint strainer and pipette to avoid overspill
+    <string name="script_5">Loading the copper backplane paint into the airbrush cup. Use a paint strainer and pipette to avoid overspill
          and get a smooth consistency to avoid blocks.</string>
     <string name="tip_script_5">Tip: Once the paint is in the airbrush move rapidly as it dries quickly.</string>
     <string name="script_6">Place the cap on the airbrush and remove the nozzle guard.</string>
-    <string name="script_7">Turn the compressor up to 45 psi or 4 bar. This paint is viscous and requires power to be effectively atomised.</string>
-    <string name="script_8">Move the airbrush to approximately 30cm perpendicular to the substrate. The distance gauge on the right will help you and provide a warning box if you spray while too far away.</string>
+    <string name="script_7">Turn the compressor up to 45 psi or 4 bar. This paint is viscous and requires high pressure to be atomised.</string>
+    <string name="script_8">Move the airbrush to approximately 30cm perpendicular to the substrate. The distance gauge on the right will help you and warnings will show if you spray while too far away or at too great an angle.</string>
                 <!--warning box/distance gauge/angle implemented while spray button pressed down-->
     <string name="script_9">Release air by pressing down on the trigger. While air is flowing release paint by pulling trigger back.</string>
     <string name="tip_script_9">Tip: Pulling back before pressing down will cause paint to splutter.</string>
@@ -32,16 +32,16 @@
     <!--Spraying layer 2, dielectric-->
     <string name="script_14">Phase 2: Spraying Dielectric Layer.</string>
     <string name="script_15">Ensure that PPE is still in place.</string>
-    <string name="script_16">Load the delectric material into the airbrush cup. Use a paint strainer and pipette to avoid overspill
+    <string name="script_16">Load the dielectric material into the airbrush cup. Use a paint strainer and pipette to avoid overspill
          and get a smooth consistency to avoid blocks.</string>
     <string name="script_17">Spray with compressor at 45 psi or 4 bar.</string>
     <string name="script_18">As before, use the distance gauge to position your airbrush approximately 30cm perpendicular to the substrate.</string>
-    <string name="script_19">Fill in the outline. This layer should cover beyond the edges of the copper layer. Be careful not to spray over the ends of the wires though, these need to be exposed copper for the circuit connections.</string>
+    <string name="script_19">Fill in the outline. This layer should cover beyond the edges of the copper layer. Be careful not to spray over the ends of the electrode connections, these need to be exposed copper for the circuit connections.</string>
                 <!--highlight separate connection point in AR with stop sign/red circle.-->
     <string name="script_20">When you have finished spraying, return the unused paint to the bottle.</string>
     <string name="script_21">Now wait at least 15 minutes for paint to dry. Use this time to clean out your airbrush.</string>
     <string name="tip_script_21">Tip: remove the ergonomic casing to make cleaning easier and disassemble airbrush to access parts.</string>
-                <!--onscreen timer, disappaears when finished-->
+                <!--onscreen timer, disappears when finished-->
     <string name="script_22">You are now ready to move onto phase 3 - spraying the electroluminescent material.</string>
 
     <!--Spraying layer 3, active material-->
