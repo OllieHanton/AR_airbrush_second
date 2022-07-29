@@ -187,6 +187,8 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
     public int objectWiringResource = R.raw.logo_welectrode_tiny;
     public boolean wiresToggle = false;
 
+    public Vector3 outOfBoundsVariable;
+
     @Override
     @SuppressWarnings({"AndroidApiChecker", "FutureReturnValueIgnored"})
     protected void onCreate(Bundle savedInstanceState) {
@@ -1452,7 +1454,8 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
 
     @Override
     public void onUpdate(FrameTime frameTime) {
-
+        triggerPress = true; //temporary for testing...
+        outOfBoundsVariable=Vector3.zero();
         distanceCalculatingAndDisplaying(); //done
         costCalculatingAndDisplaying(); //done
         virtualPaintARImplementation(); //to do
@@ -1522,7 +1525,7 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
         TextView warningTextBox = findViewById(R.id.warningtextbox);
         int bothWarnings=0;
         if(positionWarnings) {
-            if (true){//scriptCounter == 1) { //update here
+            if (scriptCounter== 10 || scriptCounter==19 || scriptCounter==29 || scriptCounter==39) {//true){//scriptCounter == 1) { //update here
 
                 //logic to calculate distance from camera to object
                 if (anchorNode != null) {
@@ -1571,6 +1574,12 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
                     warningTextBox.setText("Warning: airbrush not perpendicular to surface and distance is greater than optimal for spraying");
                 }
             }
+            else{
+                warningTextBox.setVisibility(View.INVISIBLE);
+            }
+        }
+        else{
+            warningTextBox.setVisibility(View.INVISIBLE);
         }
     }
 
@@ -1581,58 +1590,59 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
     public void virtualPaintARImplementation(){
         Frame frame = arCam.getArSceneView().getArFrame();
         //if button pressed
-        if(virtualPaint){ //virtualPaint
-            if (anchorNode != null) {
-                Pose objectPose = mainanchor.getPose(); //object post for if we aren't moving the object around.
-                Pose cameraPose = frame.getCamera().getPose();
-                Vector3 objectWorldPosition = anchorNode.getWorldPosition(); //..
+        if(triggerPress) {
+            if (virtualPaint) { //virtualPaint
+                if (anchorNode != null) {
+                    Pose objectPose = mainanchor.getPose(); //object post for if we aren't moving the object around.
+                    Pose cameraPose = frame.getCamera().getPose();
+                    Vector3 objectWorldPosition = anchorNode.getWorldPosition(); //..
 
-                //float x = cameraPose.tx();
-                //float y = cameraPose.ty();
-                //float z = cameraPose.tz();
+                    //float x = cameraPose.tx();
+                    //float y = cameraPose.ty();
+                    //float z = cameraPose.tz();
 
-                // get the camera
-                Camera arCamera = arCam.getArSceneView().getScene().getCamera();
+                    // get the camera
+                    Camera arCamera = arCam.getArSceneView().getScene().getCamera();
 
-                Ray ray = new Ray(arCamera.getWorldPosition(),arCamera.getForward());
-                HitTestResult result = arCam.getArSceneView().getScene().hitTest(ray);
+                    Ray ray = new Ray(arCamera.getWorldPosition(), arCamera.getForward());
+                    HitTestResult result = arCam.getArSceneView().getScene().hitTest(ray);
 
-                Node nonTransformableModel = (Node)model;
-                if (result.getNode()==nonTransformableModel) {
+                    Node nonTransformableModel = (Node) model;
+                    if (result.getNode() == nonTransformableModel) {
 
-                    float intersectionx = result.getPoint().x;
-                    float intersectiony = result.getPoint().y;
-                    float intersectionz = result.getPoint().z;
-                    //substrateDistance.setText("Intersect x: " + intersectionx + "Intersect y: " + intersectiony + "Intersect z: " + intersectionz);
+                        float intersectionx = result.getPoint().x;
+                        float intersectiony = result.getPoint().y;
+                        float intersectionz = result.getPoint().z;
+                        //substrateDistance.setText("Intersect x: " + intersectionx + "Intersect y: " + intersectiony + "Intersect z: " + intersectionz);
 
-                    //objectWorldPosition.x = objectWorldPosition.x + intersectionx;
-                    //objectWorldPosition.y = objectWorldPosition.y + intersectiony;
-                    //objectWorldPosition.z = objectWorldPosition.z + intersectionz;
+                        //objectWorldPosition.x = objectWorldPosition.x + intersectionx;
+                        //objectWorldPosition.y = objectWorldPosition.y + intersectiony;
+                        //objectWorldPosition.z = objectWorldPosition.z + intersectionz;
 
-                    com.google.ar.sceneform.rendering.Color newColor = new com.google.ar.sceneform.rendering.Color(0, 0.2f, 0.8f, 0.1f); //a=0 is transparent, a=1 is opaque
-                    //newColor.set(0, 0.2f, 1, 0.1f);
-                    MaterialFactory.makeOpaqueWithColor(getApplicationContext(), newColor)
-                            .thenAccept(
-                                    material -> {
-                                        // Then, create a rectangular prism, using ShapeFactory.makeCube() and use the difference vector to extend to the necessary length.
-                                        //Log.d(TAG,"drawLine insie .thenAccept");
-                                        ModelRenderable modelTemp = ShapeFactory.makeCylinder(
-                                                //new Vector3(0.01f, 0.01f, 0.01f),
-                                                0.005f, 0.001f,
-                                                Vector3.zero(), material);
+                        com.google.ar.sceneform.rendering.Color newColor = new com.google.ar.sceneform.rendering.Color(0, 0.2f, 0.8f, 0.1f); //a=0 is transparent, a=1 is opaque
+                        //newColor.set(0, 0.2f, 1, 0.1f);
+                        MaterialFactory.makeOpaqueWithColor(getApplicationContext(), newColor)
+                                .thenAccept(
+                                        material -> {
+                                            // Then, create a rectangular prism, using ShapeFactory.makeCube() and use the difference vector to extend to the necessary length.
+                                            //Log.d(TAG,"drawLine insie .thenAccept");
+                                            ModelRenderable modelTemp = ShapeFactory.makeCylinder(
+                                                    //new Vector3(0.01f, 0.01f, 0.01f),
+                                                    0.005f, 0.001f,
+                                                    Vector3.zero(), material);
 
-                                        //Last, set the world rotation of the node to the rotation calculated earlier and set the world position to the midpoint between the given points.
-                                        //Anchor lineAnchor = anchorNode.getAnchor(); //changed to have anchor of node1...
-                                        nodeForLine = new Node();
-                                        nodeForLine.setParent(model);//result.getNode());
-                                        nodeForLine.setWorldPosition(new Vector3(result.getPoint().x, result.getPoint().y+0.03f, result.getPoint().z));//new Vector3(anchorNode.getWorldPosition().x, 0, anchorNode.getWorldPosition().y));
-                                        nodeForLine.setRenderable(modelTemp);
-                                        //nodeForLine.setLocalPosition(new Vector3(0f, 0f, 0f));
-                                        drawnNodesList.add(nodeForLine);
+                                            //Last, set the world rotation of the node to the rotation calculated earlier and set the world position to the midpoint between the given points.
+                                            //Anchor lineAnchor = anchorNode.getAnchor(); //changed to have anchor of node1...
+                                            nodeForLine = new Node();
+                                            nodeForLine.setParent(model);//result.getNode());
+                                            nodeForLine.setWorldPosition(new Vector3(result.getPoint().x, result.getPoint().y + 0.03f, result.getPoint().z));//new Vector3(anchorNode.getWorldPosition().x, 0, anchorNode.getWorldPosition().y));
+                                            nodeForLine.setRenderable(modelTemp);
+                                            //nodeForLine.setLocalPosition(new Vector3(0f, 0f, 0f));
+                                            drawnNodesList.add(nodeForLine);
 
-                                        //nodeForLine.setWorldRotation(rotationFromAToB);
-                                    }
-                            );
+                                            //nodeForLine.setWorldRotation(rotationFromAToB);
+                                        }
+                                );
 
                     /*MaterialFactory.makeOpaqueWithColor(this, color)
                             .thenAccept(material -> {
@@ -1645,50 +1655,14 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
                                 indicatorModel.setWorldPosition(hitTestResult.getPoint());
                                 indicatorModel.setRenderable(sphere);
                             });*/
-                    //substrateDistance.setText("anchor x: " + anchorNode.getWorldPosition().x + " anchor y: " + anchorNode.getWorldPosition().y + " anchor z: " + anchorNode.getWorldPosition().z);
-                }
-                //result.reset();
+                        //substrateDistance.setText("anchor x: " + anchorNode.getWorldPosition().x + " anchor y: " + anchorNode.getWorldPosition().y + " anchor z: " + anchorNode.getWorldPosition().z);
+                    }
+                    //result.reset();
 
-                //}
+                    //}
+                }
             }
         }
-        /*if (anchorNode != null) {
-            Vector3 Point1 = anchorNode.getWorldPosition();
-
-            Point1.x = Point1.x + x1;
-            Point1.y = Point1.y + y1;
-            Point1.z = Point1.z + z1;
-
-            Point2.x = Point2.x + x2;
-            Point2.y = Point2.y + y2;
-            Point2.z = Point2.z + z2;
-
-            //First, find the vector extending between the two points and define a look rotation
-            //in terms of this Vector.
-            final Vector3 difference = Vector3.subtract(Point1, Point2);
-            final Vector3 directionFromTopToBottom = difference.normalized();
-            final Quaternion rotationFromAToB = Quaternion.lookRotation(directionFromTopToBottom, Vector3.up());
-            com.google.ar.sceneform.rendering.Color newColor = new com.google.ar.sceneform.rendering.Color(0, 0, 255);
-            MaterialFactory.makeOpaqueWithColor(getApplicationContext(), newColor)
-                    .thenAccept(
-                            material -> {
-                            // Then, create a rectangular prism, using ShapeFactory.makeCube() and use the difference vector
-                             //      to extend to the necessary length.
-                                //Log.d(TAG,"drawLine insie .thenAccept");
-                                ModelRenderable model = ShapeFactory.makeCube(
-                                        new Vector3(.01f, .01f, difference.length()),
-                                        Vector3.zero(), material);
-                            // Last, set the world rotation of the node to the rotation calculated earlier and set the world position to
-                             //      the midpoint between the given points .
-                                Anchor lineAnchor = node1.getAnchor(); //changed to have anchor of node1...
-                                nodeForLine = new Node();
-                                nodeForLine.setParent(node1);
-                                nodeForLine.setRenderable(model);
-                                nodeForLine.setWorldPosition(Vector3.add(Point1, Point2).scaled(.5f));
-                                nodeForLine.setWorldRotation(rotationFromAToB);
-                            }
-                    );
-        }*/
     }
 
 
@@ -1700,14 +1674,50 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
         Camera arCamera = arCam.getArSceneView().getScene().getCamera();
         Ray ray = new Ray(arCamera.getWorldPosition(),arCamera.getForward());
         HitTestResult result = arCam.getArSceneView().getScene().hitTest(ray);
+        TextView warningOutOfBoundsTextBox = findViewById(R.id.warningoutofboundstextbox);
+
         //if(sprayBounds) {
             //if(triggerPress) {
-                if (result.getNode() == null) {
-                    //throw warning - need to fix, doesn't currently work
-                    //toastMessage = Toast.makeText(this, "spray not pointed at object warning", Toast.LENGTH_SHORT);
-                    //toastMessage.show();
+        if (anchorNode != null) {
+            if (result.getNode() != null) {
+                Node nonTransformableModel = (Node)model;
+                if (result.getNode()==nonTransformableModel) {
+
+                    outOfBoundsVariable=result.getPoint();
                 }
-            //}
+            }
+        }
+        Vector3 testVector = Vector3.zero();
+        if(outOfBoundsVariable.x== 0 && outOfBoundsVariable.y== 0 && outOfBoundsVariable.z== 0){
+            //substrateDistance.setText("Outside bounds: x: " + outOfBoundsVariable.x + " y: " + outOfBoundsVariable.y  + " y: " +  outOfBoundsVariable.z);
+            if(triggerPress==true) {
+                if(scriptCounter== 10 || scriptCounter==19 || scriptCounter==29 || scriptCounter==39) {
+                    if(sprayBounds) {
+                        //warning visible
+                        //warning "Airbrush pointed out of bounds"
+                        warningOutOfBoundsTextBox.setVisibility(View.VISIBLE);
+                        warningOutOfBoundsTextBox.setText("Warning: airbrush pointed away from object");
+                    }
+                    else{
+                        warningOutOfBoundsTextBox.setVisibility(View.INVISIBLE);
+                    }
+                }
+                else{
+                    warningOutOfBoundsTextBox.setVisibility(View.INVISIBLE);
+                }
+            }
+            else{
+                warningOutOfBoundsTextBox.setVisibility(View.INVISIBLE);
+            }
+        }
+        else{
+            //substrateDistance.setText("Inside bounds: " + outOfBoundsVariable.x + " y: " + outOfBoundsVariable.y  + " y: " +  outOfBoundsVariable.z);
+            //warning invisible
+            warningOutOfBoundsTextBox.setVisibility(View.INVISIBLE);
+        }
+
+
+        //}
         //}
     }
 

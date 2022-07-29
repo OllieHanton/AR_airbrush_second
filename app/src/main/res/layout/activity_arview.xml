@@ -158,6 +158,21 @@
         android:textSize="14dp"
         app:layout_constraintBottom_toTopOf="@+id/createmode_seekbar"/>
 
+    <TextView
+        android:id="@+id/warningoutofboundstextbox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|bottom"
+        android:background="@color/warningred"
+        android:breakStrategy="simple"
+        android:gravity="center_horizontal"
+        android:padding="4dip"
+        android:text="Warning: this is the warning bar"
+        android:textColor="#FFFFFF"
+        android:textSize="14dp"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@+id/warningtextbox" />
+
     <ImageButton
         android:id="@+id/settings_drop_down_menu"
         android:layout_width="48dp"
