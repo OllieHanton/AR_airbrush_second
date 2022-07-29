@@ -32,11 +32,11 @@ Indicates that this app requires Google Play Services for AR.
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:targetApi="31">
         <!--
+        android:roundIcon="@mipmap/ic_launcher_round"
      ARCore need to be installed, as the app does not include any non-AR features.
      For an "AR Optional" app, specify "optional" instead of "required".
         -->

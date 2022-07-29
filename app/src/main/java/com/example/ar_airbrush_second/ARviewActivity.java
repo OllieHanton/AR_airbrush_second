@@ -194,6 +194,16 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
         setContentView(R.layout.activity_arview);
         getSupportActionBar().hide();
 
+        level = getIntSetting("level");
+        uv = getBoolSetting("uv");
+        laser = getBoolSetting("laser");
+        positionWarnings = getBoolSetting("warning");
+        virtualPaint = getBoolSetting("paint");
+        sprayBounds = getBoolSetting("bounds");
+        distance = getBoolSetting("dist");
+        cost = getBoolSetting("cost");
+        Log.d("DEBUG", "Settings Retrieved");
+
         if (checkSystemSupport(this)) {
 
             //Initiate ARCore functionality:
@@ -637,7 +647,7 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
 //makeCylinder(float radius, float height, Vector3 center, Material material)
 
     public void showSettings(View v) {
-        level = getIntSetting("level");
+        /*level = getIntSetting("level");
         uv = getBoolSetting("uv");
         laser = getBoolSetting("laser");
         positionWarnings = getBoolSetting("warnings");
@@ -645,7 +655,7 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
         sprayBounds = getBoolSetting("bounds");
         distance = getBoolSetting("dist");
         cost = getBoolSetting("cost");
-        Log.d("DEBUG", "Settings Retrieved");
+        Log.d("DEBUG", "Settings Retrieved");*/
 
         PopupMenu popup = new PopupMenu(this, v);
         popup.setOnMenuItemClickListener(this);
@@ -1120,22 +1130,6 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
             }
         }
     }
-
-    //region Image Timer
-    public CountDownTimer imgTimer;
-
-    private void imgTimer(ImageView inputImageView) {
-        imgTimer = new CountDownTimer(3000, 1000) {
-            public void onTick(long millisUntilFinished) {
-            }
-
-            public void onFinish() {
-                inputImageView.setVisibility(View.GONE);
-                imageBeingPoppedupFlag = false;
-            }
-        }.start();
-    }
-    //endregion
 
     //method to set script number when progress bar is changed (N.B. the other way around is handled within "implementScript()"), use should always be followed by implementscript()
     private void updateScriptCounters() {
@@ -1711,7 +1705,7 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
         //}
     }
 
-    //region Timer
+    //region Timers
     public TextView tvTimer;
     public CountDownTimer timer;
 
@@ -1731,6 +1725,20 @@ public class ARviewActivity extends AppCompatActivity implements ServiceConnecti
                 }
             }.start();
         }
+    }
+
+    public CountDownTimer imgTimer;
+
+    private void imgTimer(ImageView inputImageView) {
+        imgTimer = new CountDownTimer(3000, 1000) {
+            public void onTick(long millisUntilFinished) {
+            }
+
+            public void onFinish() {
+                inputImageView.setVisibility(View.GONE);
+                imageBeingPoppedupFlag = false;
+            }
+        }.start();
     }
     //endregion
 

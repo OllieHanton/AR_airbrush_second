@@ -7,8 +7,11 @@
         <entry key="..\:/Coding/Android/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/drawable/bluetextbackground.xml" value="0.2325" />
         <entry key="..\:/Coding/Android/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/drawable/border.xml" value="0.2315" />
         <entry key="..\:/Coding/Android/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/drawable/frame.xml" value="0.2325" />
+        <entry key="..\:/Coding/Android/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/drawable/gradient.xml" value="0.207" />
         <entry key="..\:/Coding/Android/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/drawable/greentextbackground.xml" value="0.2325" />
+        <entry key="..\:/Coding/Android/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/drawable/highlight.xml" value="0.1885" />
         <entry key="..\:/Coding/Android/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/drawable/ic_launcher_background.xml" value="0.197" />
+        <entry key="..\:/Coding/Android/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/drawable/ic_launcher_foreground.xml" value="0.1885" />
         <entry key="..\:/Coding/Android/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/drawable/ic_notification.xml" value="0.1425" />
         <entry key="..\:/Coding/Android/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/drawable/orangetextbackground.xml" value="0.2325" />
         <entry key="..\:/Coding/Android/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/drawable/redtextbackground.xml" value="0.2325" />
@@ -36,6 +39,8 @@
         <entry key="..\:/Coding/Android/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/layout/timer.xml" value="0.18854166666666666" />
         <entry key="..\:/Coding/Android/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/menu/menu_devices.xml" value="0.1890625" />
         <entry key="..\:/Coding/Android/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/menu/menu_settings.xml" value="0.2015625" />
+        <entry key="..\:/Coding/Android/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.207" />
+        <entry key="..\:/Coding/Android/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.207" />
         <entry key="..\:/Coding/Android/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/xml/preferences.xml" value="0.264" />
         <entry key="..\:/Coding/Android/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/xml/root_preferences.xml" value="0.25226449275362317" />
         <entry key="..\:/Users/oh12660/AndroidStudioProjects/AR_airbrush_second/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.299" />
